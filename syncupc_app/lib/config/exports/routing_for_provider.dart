@@ -1,0 +1,12 @@
+export 'package:flutter/material.dart';
+export 'package:flutter_riverpod/flutter_riverpod.dart';
+export 'package:go_router/go_router.dart';
+export '/utils/animated_splash_screen.dart';
+export 'package:syncupc/ui/auth/login/screens/login_screen.dart';
+export 'package:syncupc/ui/auth/welcome/screens/auth_welcome_screen.dart';
+export 'package:syncupc/ui/auth/register/screens/register_email_screen.dart';
+export 'package:syncupc/ui/auth/register/screens/register_password_screen.dart';
+export 'package:syncupc/ui/auth/register/screens/register_profile_college_info_screen.dart';
+export 'package:syncupc/ui/auth/register/screens/register_profile_info_screen.dart';
+export 'package:syncupc/ui/auth/register/screens/register_profile_notifications_preferences_screen.dart';
+export 'package:syncupc/ui/home/screens/home_screen.dart';
