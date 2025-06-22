@@ -61,7 +61,7 @@ class AppTypography {
 
   static const TextStyle heading3 = TextStyle(
     fontFamily: fontFamily,
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: bold,
     color: AppColors.neutral900,
     height: 1.3,
@@ -99,6 +99,13 @@ class AppTypography {
     height: 1.4,
   );
 
+  static const TextStyle settingsStyle = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 15,
+    fontWeight: bold,
+    color: AppColors.neutral600,
+    height: 1.4,
+  );
   static const TextStyle body3 = TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,

@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
+import 'package:syncupc/config/exports/routing_for_provider.dart';
 import 'package:syncupc/design_system/molecules/event_card.dart';
 
-class HomeEventsSection extends StatelessWidget {
+class HomeEventsSection extends ConsumerWidget {
   final String title;
   final List<Map<String, dynamic>> events;
 
@@ -13,7 +13,7 @@ class HomeEventsSection extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
         Row(
@@ -42,15 +42,20 @@ class HomeEventsSection extends StatelessWidget {
                   left: index == 0 ? 0 : 12,
                   right: index == events.length - 1 ? 0 : 0,
                 ),
-                child: EventCard(
-                  title: event['title'],
-                  time: event['time'],
-                  location: event['location'],
-                  attendeesText: event['attendeesText'],
-                  totalAttendees: event['totalAttendees'],
-                  imageUrl: event['imageUrl'],
-                  attendeeAvatars:
-                      List<String>.from(event['attendeeAvatars'] ?? []),
+                child: GestureDetector(
+                  onTap: () {
+                    context.push('/event/:id');
+                  },
+                  child: EventCard(
+                    title: event['title'],
+                    time: event['time'],
+                    location: event['location'],
+                    attendeesText: event['attendeesText'],
+                    totalAttendees: event['totalAttendees'],
+                    imageUrl: event['imageUrl'],
+                    attendeeAvatars:
+                        List<String>.from(event['attendeeAvatars'] ?? []),
+                  ),
                 ),
               );
             },

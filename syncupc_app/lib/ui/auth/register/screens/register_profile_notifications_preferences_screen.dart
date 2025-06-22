@@ -2,8 +2,8 @@
 
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
-import 'package:syncupc/utils/custom_loading_screen.dart';
-
+import 'package:syncupc/utils/loading_screens/loading_dialog_helpers.dart';
+import 'package:syncupc/utils/loading_screens/loading_types.dart';
 import '../../../../config/providers/register_providers.dart';
 
 class RegisterProfileNotificationsPreferencesScreen extends ConsumerWidget {

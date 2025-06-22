@@ -1,5 +1,13 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:syncupc/ui/bookmark/screens/bookmark_screen.dart';
+import 'package:syncupc/ui/home/screens/event_details_screen.dart';
+import 'package:syncupc/ui/home/screens/event_confirm_screen.dart';
+import 'package:syncupc/ui/home/screens/scanner_screen.dart';
+import 'package:syncupc/ui/registerEvent/screens/register_event_screen.dart';
 import 'package:syncupc/ui/search/screens/search_screen.dart';
+import 'package:syncupc/ui/settings/screens/edit_profile_screen.dart';
+import 'package:syncupc/ui/settings/screens/history_screen.dart';
+import 'package:syncupc/ui/settings/screens/settings_screen.dart';
 import './exports/routing_for_provider.dart';
 import './exports/pages_barrel.dart';
 import './exports/design_system_barrel.dart';
@@ -74,24 +82,50 @@ GoRouter appRouter(Ref ref) {
           GoRoute(
             path: '/bookmarks',
             name: 'bookmarks',
-            builder: (context, state) => const ProfilePage(),
+            builder: (context, state) => const BookmarkScreen(),
           ),
           GoRoute(
             path: '/settings',
             name: 'settings',
-            builder: (context, state) => const ProfilePage(),
+            builder: (context, state) => const SettingsScreen(),
           ),
         ],
       ),
-
-      // Otras rutas independientes
       GoRoute(
         path: '/event/:id',
         name: 'event-detail',
         builder: (context, state) {
-          final eventId = state.pathParameters['id']!;
-          return EventDetailPage(eventId: eventId);
+          //final eventId = state.pathParameters['id']!;
+          return EventDetailsScreen();
         },
+      ),
+      GoRoute(
+        path: '/event_confirm',
+        name: 'event_confirm',
+        builder: (context, state) {
+          //final eventId = state.pathParameters['id']!;
+          return EventConfirm();
+        },
+      ),
+      GoRoute(
+        path: '/scanner',
+        name: 'scanner',
+        builder: (context, state) => const ScannerScreen(),
+      ),
+      GoRoute(
+        path: '/register_event',
+        name: 'registerEvent',
+        builder: (context, state) => const RegisterEventScreen(),
+      ),
+      GoRoute(
+        path: '/edit_profile',
+        name: 'editProfile',
+        builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/history',
+        name: 'history',
+        builder: (context, state) => const HistoryScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

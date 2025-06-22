@@ -41,6 +41,16 @@ class AppText extends StatelessWidget {
     this.overflow,
   }) : style = AppTypography.heading2;
 
+  const AppText.button(
+    this.text, {
+    super.key,
+    this.textAlign,
+    this.icon,
+    this.color,
+    this.maxLines,
+    this.overflow,
+  }) : style = AppTypography.button;
+
   const AppText.subtitle2(
     this.text, {
     super.key,
@@ -60,6 +70,16 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.overflow,
   }) : style = AppTypography.forgotPassword;
+
+  const AppText.heading3(
+    this.text, {
+    super.key,
+    this.textAlign,
+    this.icon,
+    this.color,
+    this.maxLines,
+    this.overflow,
+  }) : style = AppTypography.heading3;
 
   const AppText.time(
     this.text, {
@@ -90,6 +110,15 @@ class AppText extends StatelessWidget {
     this.maxLines,
     this.overflow,
   }) : style = AppTypography.body1;
+  const AppText.settings(
+    this.text, {
+    super.key,
+    this.textAlign,
+    this.color,
+    this.icon,
+    this.maxLines,
+    this.overflow,
+  }) : style = AppTypography.settingsStyle;
 
   const AppText.body2(
     this.text, {

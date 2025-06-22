@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:syncupc/design_system/atoms/app_text.dart';
+import 'package:syncupc/design_system/molecules/attendees_avatars.dart';
 import 'package:syncupc/design_system/protons/colors.dart';
 
 class EventCard extends StatelessWidget {
@@ -10,7 +11,7 @@ class EventCard extends StatelessWidget {
   final String attendeesText;
   final String? imageUrl;
   final List<String> attendeeAvatars;
-  final int totalAttendees; // Nuevo parámetro para el total de asistentes
+  final int totalAttendees;
   final VoidCallback? onTap;
   final bool isNearby;
 
@@ -20,7 +21,7 @@ class EventCard extends StatelessWidget {
     required this.time,
     required this.location,
     required this.attendeesText,
-    required this.totalAttendees, // Requerido para calcular el +X
+    required this.totalAttendees,
     this.imageUrl,
     this.attendeeAvatars = const [],
     this.onTap,
@@ -108,61 +109,15 @@ class EventCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  _buildAvatarStack(),
+                  AttendeesAvatars(
+                    avatars: attendeeAvatars,
+                    totalAttendees: totalAttendees,
+                  ),
                 ],
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildAvatarStack() {
-    if (attendeeAvatars.isEmpty) return const SizedBox.shrink();
-
-    final int avatarsToShow =
-        attendeeAvatars.length > 3 ? 3 : attendeeAvatars.length;
-    final int remainingCount = totalAttendees - 3;
-    final bool showPlusCircle = totalAttendees > 3;
-
-    final double overlap = 10.0; // Espacio horizontal entre avatares
-
-    final double width = showPlusCircle
-        ? (avatarsToShow * overlap) + 24
-        : (avatarsToShow * overlap) + 12;
-
-    return SizedBox(
-      width: width,
-      height: 24,
-      child: Stack(
-        children: [
-          for (int i = 0; i < avatarsToShow; i++)
-            Positioned(
-              left: i * overlap,
-              child: CircleAvatar(
-                radius: 12,
-                backgroundImage: NetworkImage(attendeeAvatars[i]),
-                backgroundColor: AppColors.neutral200,
-              ),
-            ),
-          if (showPlusCircle)
-            Positioned(
-              left: avatarsToShow * overlap,
-              child: CircleAvatar(
-                radius: 12,
-                backgroundColor: AppColors.primary200,
-                child: Text(
-                  '+$remainingCount',
-                  style: const TextStyle(
-                    fontSize: 9,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-        ],
       ),
     );
   }

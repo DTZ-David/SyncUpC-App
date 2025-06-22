@@ -3,7 +3,8 @@
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/atoms/text_field.dart';
-import 'package:syncupc/utils/custom_loading_screen.dart';
+import 'package:syncupc/utils/loading_screens/loading_dialog_helpers.dart';
+import 'package:syncupc/utils/loading_screens/loading_types.dart';
 
 class RegisterPasswordScreen extends ConsumerWidget {
   const RegisterPasswordScreen({super.key});
@@ -77,6 +78,9 @@ class RegisterPasswordScreen extends ConsumerWidget {
                 onPressed: () async {
                   context.showLoadingDialog(
                     type: LoadingType.custom,
+                    title: "¡Vamos a crear tu cuenta!",
+                    subtitle:
+                        "Solo unos pasos más para empezar a explorar los mejores eventos cerca de ti.",
                   );
                   await Future.delayed(Duration(seconds: 2));
                   context.hideLoadingDialog();

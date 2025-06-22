@@ -1,8 +1,8 @@
 // ignore_for_file: dead_code
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:syncupc/design_system/protons/colors.dart';
 import '../utils/bottom_navigation.dart';
 
@@ -23,7 +23,9 @@ class MainNavigationWrapper extends ConsumerWidget {
       floatingActionButton: isAuthorized
           ? FloatingActionButton(
               backgroundColor: AppColors.white, // mismo que BottomAppBar
-              onPressed: () {},
+              onPressed: () {
+                context.push('/register_event');
+              },
               shape: const CircleBorder(), // asegura que sea circular
               elevation: 4, // sombra sutil, puedes ajustarla
               child: SvgPicture.asset(

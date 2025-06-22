@@ -1,7 +1,10 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncupc/config/route_provider.dart';
 import 'config/theme.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   runApp(
@@ -22,6 +25,10 @@ class SyncUpcApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       routerConfig: routers,
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      supportedLocales: const [
+        Locale('es'),
+      ],
     );
   }
 }
