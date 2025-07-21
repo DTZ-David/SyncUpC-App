@@ -1,6 +1,7 @@
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/atoms/text_field.dart';
+import 'package:syncupc/features/auth/providers/register_providers.dart';
 
 class RegisterProfileInfoScreen extends ConsumerWidget {
   const RegisterProfileInfoScreen({super.key});
@@ -80,6 +81,13 @@ class RegisterProfileInfoScreen extends ConsumerWidget {
                       text: "Siguiente",
                       variant: ButtonVariant.filled,
                       onPressed: () {
+                        ref
+                            .read(registerFormProvider.notifier)
+                            .setFirstName(nameController.text.trim());
+                        ref
+                            .read(registerFormProvider.notifier)
+                            .setLastName(lastNameController.text.trim());
+
                         context.push('/register/step/2');
                       },
                     ),

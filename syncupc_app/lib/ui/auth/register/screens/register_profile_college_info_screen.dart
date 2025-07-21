@@ -1,6 +1,7 @@
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/atoms/text_field.dart';
+import 'package:syncupc/features/auth/providers/register_providers.dart';
 
 import '../widgets/custom_dropDown_button.dart';
 
@@ -39,7 +40,7 @@ class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
         subtitle: 'Estudio del comportamiento humano',
       ),
     ];
-    final nameController = TextEditingController();
+    final phoneController = TextEditingController();
     final currentStep = getCurrentStep(context);
 
     return Scaffold(
@@ -73,7 +74,7 @@ class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
                   ),
                 ),
                 AppTextField(
-                  controller: nameController,
+                  controller: phoneController,
                   labelText: "Escribe aquí tu número de telefono",
                 ),
                 const SizedBox(height: 24),
@@ -93,6 +94,15 @@ class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
                       text: "Siguiente",
                       variant: ButtonVariant.filled,
                       onPressed: () {
+                        ref
+                            .read(registerFormProvider.notifier)
+                            .setPhoneNumber(phoneController.text.trim());
+                        ref
+                            .read(registerFormProvider.notifier)
+                            .setFaculty("685ad08eb1262f0763410dc5");
+                        ref
+                            .read(registerFormProvider.notifier)
+                            .setCareer("665f4d2d1c9d440001fcf001");
                         context.push('/register/step/3');
                       },
                     ),

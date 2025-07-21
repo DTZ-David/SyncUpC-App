@@ -2,11 +2,15 @@ import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/atoms/text_field.dart';
 
+import '../../../../features/auth/providers/register_providers.dart';
+
 class RegisterEmailScreen extends ConsumerWidget {
   const RegisterEmailScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final TextEditingController emailController = TextEditingController();
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -35,6 +39,7 @@ class RegisterEmailScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.all(12),
               child: AppTextField(
+                controller: emailController,
                 labelText:
                     "Escribe aqui tu email              | @unicesar.edu.co",
               ),
@@ -45,6 +50,10 @@ class RegisterEmailScreen extends ConsumerWidget {
                 text: "Siguiente",
                 variant: ButtonVariant.filled,
                 onPressed: () {
+                  ref
+                      .read(registerFormProvider.notifier)
+                      .setEmail(emailController.text.trim());
+
                   context.push('/registerPassword');
                 },
               ),

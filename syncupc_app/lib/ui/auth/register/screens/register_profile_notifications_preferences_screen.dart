@@ -2,9 +2,11 @@
 
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
+import 'package:syncupc/features/auth/controllers/register_controller.dart';
 import 'package:syncupc/utils/loading_screens/loading_dialog_helpers.dart';
 import 'package:syncupc/utils/loading_screens/loading_types.dart';
 import '../../../../config/providers/register_providers.dart';
+import '../../../../features/auth/providers/register_providers.dart';
 
 class RegisterProfileNotificationsPreferencesScreen extends ConsumerWidget {
   const RegisterProfileNotificationsPreferencesScreen({super.key});
@@ -71,16 +73,31 @@ class RegisterProfileNotificationsPreferencesScreen extends ConsumerWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: PrimaryButton(
-                  text: "Siguiente",
-                  variant: ButtonVariant.filled,
-                  onPressed: () async {
-                    context.showLoadingDialog(type: LoadingType.simple);
-                    await Future.delayed(const Duration(seconds: 2));
-                    context.hideLoadingDialog();
+                    text: "Siguiente",
+                    variant: ButtonVariant.filled,
+                    onPressed: () async {
+                      context.showLoadingDialog(type: LoadingType.simple);
 
-                    context.go('/');
-                  },
-                ),
+                      final formData = ref.read(registerFormProvider);
+                      final success = await ref
+                          .read(registerControllerProvider.notifier)
+                          .register(formData);
+
+                      context.hideLoadingDialog();
+
+                      if (success) {
+                        context.go('/'); // o donde corresponda
+                      } else {
+                        final error =
+                            ref.read(registerControllerProvider).errorMessage ??
+                                'Error al registrar';
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(error),
+                              backgroundColor: Colors.red),
+                        );
+                      }
+                    }),
               ),
             ),
           ],

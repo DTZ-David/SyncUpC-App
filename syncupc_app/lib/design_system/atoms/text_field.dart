@@ -3,7 +3,7 @@ import '../protons/colors.dart';
 import '../protons/spacing.dart';
 import '../protons/typography.dart';
 
-class AppTextField extends StatelessWidget {
+class AppTextField extends StatefulWidget {
   final String? hintText;
   final String? labelText;
   final TextEditingController? controller;
@@ -32,21 +32,51 @@ class AppTextField extends StatelessWidget {
   });
 
   @override
+  State<AppTextField> createState() => _AppTextFieldState();
+}
+
+class _AppTextFieldState extends State<AppTextField> {
+  late bool _obscureTextState;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureTextState = widget.obscureText;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final bool isPassword = widget.obscureText;
+
     return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      validator: validator,
-      onChanged: onChanged,
-      enabled: enabled,
-      maxLines: maxLines,
+      controller: widget.controller,
+      obscureText: _obscureTextState,
+      keyboardType: widget.keyboardType,
+      validator: widget.validator,
+      onChanged: widget.onChanged,
+      enabled: widget.enabled,
+      maxLines: widget.maxLines,
       style: AppTypography.body1,
       decoration: InputDecoration(
-        labelText: labelText,
-        hintText: hintText,
-        prefixIcon: prefixIcon,
-        suffixIcon: suffixIcon,
+        labelText: widget.labelText,
+        hintText: widget.hintText,
+        prefixIcon: widget.prefixIcon,
+        suffixIcon: widget.suffixIcon ??
+            (isPassword
+                ? IconButton(
+                    icon: Icon(
+                      _obscureTextState
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: AppColors.neutral400,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureTextState = !_obscureTextState;
+                      });
+                    },
+                  )
+                : null),
         labelStyle: AppTypography.body2.copyWith(color: AppColors.neutral600),
         hintStyle: AppTypography.body2.copyWith(color: AppColors.neutral400),
         filled: true,

@@ -32,7 +32,7 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const LoginScreen(),
+        builder: (context, state) => LoginScreen(),
       ),
       GoRoute(
         path: '/registerEmail',
