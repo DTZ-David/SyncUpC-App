@@ -2,9 +2,11 @@ class User {
   final String name;
   final String photo;
   final String token;
+  final String refreshToken;
   final String role;
 
   User({
+    required this.refreshToken,
     required this.name,
     required this.photo,
     required this.token,
@@ -12,11 +14,14 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
+    final data = json['data'] ?? json; // 👈 esto es CLAVE
+
     return User(
-      name: json['name'] ?? '',
-      photo: json['photo'] ?? '',
-      token: json['token'] ?? '',
-      role: json['role'] ?? '',
+      token: data['token'] ?? '',
+      refreshToken: data['refreshToken'] ?? '',
+      name: data['name'] ?? '',
+      photo: data['profilePicture'] ?? '',
+      role: data['role'] ?? '',
     );
   }
 
@@ -25,6 +30,7 @@ class User {
       'name': name,
       'photo': photo,
       'token': token,
+      'refreshToken': refreshToken,
       'role': role,
     };
   }

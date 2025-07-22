@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:syncupc/design_system/protons/typography.dart';
 
-class AnimatedSplashScreen extends StatefulWidget {
+import '../features/auth/controllers/login_controller.dart';
+
+class AnimatedSplashScreen extends ConsumerStatefulWidget {
   const AnimatedSplashScreen({super.key});
 
   @override
-  State<AnimatedSplashScreen> createState() => _AnimatedSplashScreenState();
+  ConsumerState<AnimatedSplashScreen> createState() =>
+      _AnimatedSplashScreenState();
 }
 
-class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
+class _AnimatedSplashScreenState extends ConsumerState<AnimatedSplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _moveUpController;
   late Animation<Offset> _logoOffsetAnimation;
@@ -69,26 +73,28 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen>
   }
 
   Future<void> _startAnimations() async {
-    // Espera inicial reducida
     await Future.delayed(const Duration(milliseconds: 200));
-
-    // Logo sube
     await _moveUpController.forward();
-
-    // Pausa más corta antes de mover a posición final
     await Future.delayed(const Duration(milliseconds: 250));
 
-    // Movimiento simultáneo del logo y aparición del texto
     await Future.wait([
       _finalPositionController.forward(),
       _textFadeController.forward(),
     ]);
 
-    // Pausa final reducida antes de navegar
     await Future.delayed(const Duration(milliseconds: 1000));
 
-    if (mounted) {
-      context.go('/welcome'); // Cambia a tu ruta principal
+    if (!mounted) return;
+
+    final isAuth =
+        await ref.read(loginControllerProvider.notifier).loadUserFromPrefs();
+
+    if (!mounted) return; // 👈 Justo aquí, antes del context.go()
+
+    if (isAuth) {
+      context.go('/'); // o tu ruta principal
+    } else {
+      context.go('/welcome');
     }
   }
 

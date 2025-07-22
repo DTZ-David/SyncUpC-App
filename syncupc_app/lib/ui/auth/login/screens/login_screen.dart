@@ -31,6 +31,12 @@ class LoginScreen extends ConsumerWidget {
           ref.read(loginControllerProvider.notifier).clearError();
         });
       }
+
+      // 🎯 Agrega este para redirigir
+      if (current.isAuthenticated &&
+          current.isAuthenticated != previous?.isAuthenticated) {
+        context.go('/'); // ✅ Redirige al home
+      }
     });
 
     void handleLogin() {

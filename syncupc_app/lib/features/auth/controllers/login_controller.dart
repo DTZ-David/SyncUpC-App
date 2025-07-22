@@ -25,11 +25,12 @@ class LoginController extends _$LoginController {
     try {
       final response = await _authService.login(username, password);
       final user = User.fromJson(response);
-
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', user.token);
-      await prefs.setString('refreshToken', response['refreshToken'] ?? '');
-
+      await prefs.setString('refreshToken', user.refreshToken);
+      await prefs.setString('name', user.name);
+      await prefs.setString('profilePicture', user.photo);
+      await prefs.setString('role', user.role);
       state = state.copyWith(
         user: user,
         isLoading: false,
@@ -43,6 +44,55 @@ class LoginController extends _$LoginController {
         isAuthenticated: false,
         user: null,
       );
+    }
+  }
+
+  Future<bool> loadUserFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final refreshToken = prefs.getString('refreshToken');
+    final name = prefs.getString('name');
+    final photo = prefs.getString('profilePicture');
+    final role = prefs.getString('role');
+
+    // 🔒 Verificamos que haya datos mínimos para construir el User
+    if (refreshToken == null || name == null || photo == null || role == null) {
+      return false;
+    }
+
+    try {
+      // 🔄 Llamada al backend para refrescar token
+      final data = await _authService.refreshAccessToken(refreshToken);
+
+      final newToken = data['accessToken'];
+      final newRefreshToken = data['refreshToken'];
+
+      // Guardamos los nuevos tokens
+      await prefs.setString('token', newToken);
+      await prefs.setString('refreshToken', newRefreshToken);
+
+      final user = User(
+        token: newToken,
+        refreshToken: newRefreshToken,
+        name: name,
+        photo: photo,
+        role: role,
+      );
+
+      state = state.copyWith(
+        user: user,
+        isAuthenticated: true,
+      );
+
+      return true; // 👈 Éxito
+    } catch (e) {
+      // Si algo falla, hacemos logout silencioso
+      await prefs.clear(); // opcional
+      state = state.copyWith(
+        user: null,
+        isAuthenticated: false,
+      );
+
+      return false; // 👈 Fallo
     }
   }
 

@@ -38,6 +38,22 @@ class LoginService {
     }
   }
 
+  Future<Map<String, dynamic>> refreshAccessToken(String refreshToken) async {
+    final url = Uri.parse('${AppConfig.baseUrl}/user//refresh-token');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'refreshToken': refreshToken}),
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body)['data'];
+    } else {
+      throw Exception('No se pudo refrescar el token');
+    }
+  }
+
   Future<void> logout() async {
     await Future.delayed(const Duration(milliseconds: 500));
   }
