@@ -7,3 +7,5 @@ export 'package:syncupc/config/exports/design_system_barrel.dart';
 export 'package:syncupc/config/providers/register_providers.dart';
 export 'package:syncupc/design_system/atoms/text_field.dart';
 export 'package:syncupc/ui/registerEvent/widgets/time_drop_down.dart';
+export 'package:syncupc/ui/registerEvent/utils/section_tile.dart';
+export 'package:syncupc/ui/registerEvent/utils/switch_tile.dart';

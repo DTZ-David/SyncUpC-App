@@ -5,11 +5,15 @@ import 'package:syncupc/ui/home/exports/home.dart';
 import 'package:syncupc/ui/home/widgets/confirm_scan_dialog.dart';
 import 'package:syncupc/ui/home/widgets/home_events_for_u.dart';
 
+import '../../../features/auth/providers/auth_providers.dart';
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider);
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         heroTag: null,
@@ -43,10 +47,11 @@ class HomeScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const HomeHeader(
-                  userName: "Maria Gonzales",
+                HomeHeader(
+                  userName: user?.name ?? 'Invitado',
                   location: "Valledupar",
-                  profileImagePath: 'assets/images/profile.png',
+                  profileImagePath:
+                      user?.photo ?? 'assets/images/default_avatar.png',
                 ),
                 const SizedBox(height: 24),
                 const SearchBarDesign(filter: true),

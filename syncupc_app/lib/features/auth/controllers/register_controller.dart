@@ -16,7 +16,6 @@ class RegisterController extends _$RegisterController {
     return const RegisterState();
   }
 
-  /// Ahora SÍ devuelve bool y NO recibe parámetros
   Future<bool> register(RegisterUserRequest request) async {
     state = state.copyWith(
       isLoading: true,

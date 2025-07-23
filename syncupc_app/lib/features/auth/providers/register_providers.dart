@@ -2,14 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:syncupc/features/auth/controllers/register_controller.dart';
 import 'package:syncupc/features/auth/models/register_user_request.dart';
-
 import '../models/notification_preferences.dart';
 
 part 'register_providers.g.dart';
-
-/* ─────────────────────────────────────────
-   FORM NOTIFIER  ➜  acumula los pasos
-   ───────────────────────────────────────── */
 
 @Riverpod(keepAlive: true)
 class RegisterForm extends _$RegisterForm {

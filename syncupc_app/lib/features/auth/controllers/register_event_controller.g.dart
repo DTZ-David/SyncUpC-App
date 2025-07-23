@@ -1,26 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'login_controller.dart';
+part of 'register_event_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$loginControllerHash() => r'6a75f79016097081b6768db2a7c84c55fa863e4a';
+String _$registerEventControllerHash() =>
+    r'6eca2cd56f5b53479e2f6d828dbd6059c1f40b1b';
 
-/// See also [LoginController].
-@ProviderFor(LoginController)
-final loginControllerProvider =
-    NotifierProvider<LoginController, AuthState>.internal(
-  LoginController.new,
-  name: r'loginControllerProvider',
+/// See also [RegisterEventController].
+@ProviderFor(RegisterEventController)
+final registerEventControllerProvider = AutoDisposeNotifierProvider<
+    RegisterEventController, RegisterState>.internal(
+  RegisterEventController.new,
+  name: r'registerEventControllerProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$loginControllerHash,
+      : _$registerEventControllerHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$LoginController = Notifier<AuthState>;
+typedef _$RegisterEventController = AutoDisposeNotifier<RegisterState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

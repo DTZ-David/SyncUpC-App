@@ -89,7 +89,7 @@ class _AnimatedSplashScreenState extends ConsumerState<AnimatedSplashScreen>
     final isAuth =
         await ref.read(loginControllerProvider.notifier).loadUserFromPrefs();
 
-    if (!mounted) return; // 👈 Justo aquí, antes del context.go()
+    if (!mounted) return;
 
     if (isAuth) {
       context.go('/'); // o tu ruta principal

@@ -3,7 +3,8 @@ import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/atoms/text_field.dart';
 import 'package:syncupc/features/auth/providers/register_providers.dart';
 
-import '../widgets/custom_dropDown_button.dart';
+import '../../../../design_system/molecules/drop_down.dart';
+import '../../../../features/home/models/dropdown_item.dart';
 
 class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
   const RegisterProfileCollegeInfoScreen({super.key});
@@ -78,7 +79,7 @@ class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
                   labelText: "Escribe aquí tu número de telefono",
                 ),
                 const SizedBox(height: 24),
-                CustomDropdown<String>(
+                DropdownMolecule<String>(
                   labelText: 'Carrera',
                   hintText: 'Selecciona tu carrera',
                   isRequired: true,

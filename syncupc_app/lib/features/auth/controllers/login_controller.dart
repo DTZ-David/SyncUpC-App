@@ -6,13 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 part 'login_controller.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class LoginController extends _$LoginController {
   late final LoginService _authService;
 
   @override
   AuthState build() {
     _authService = LoginService();
+
     return AuthState();
   }
 

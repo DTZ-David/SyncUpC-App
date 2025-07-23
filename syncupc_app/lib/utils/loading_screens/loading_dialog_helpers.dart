@@ -23,7 +23,20 @@ extension LoadingScreenExtension on BuildContext {
   }
 
   void hideLoadingDialog() {
-    Navigator.of(this).pop();
+    // Usar rootNavigator para asegurar que cierre el dialog correcto
+    Navigator.of(this, rootNavigator: true).pop();
+  }
+
+  // Método alternativo más seguro
+  void hideLoadingDialogSafe() {
+    try {
+      if (Navigator.canPop(this)) {
+        Navigator.of(this, rootNavigator: true).pop();
+      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error cerrando loading dialog: $e');
+    }
   }
 }
 
