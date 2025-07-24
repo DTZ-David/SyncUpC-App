@@ -1,7 +1,7 @@
 import 'package:syncupc/config/constants/app.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:syncupc/features/auth/models/event_request.dart';
+import 'package:syncupc/features/registerEvent/models/event_request.dart';
 
 class EventRequestService {
   Future<void> registerEvent(String token, EventRequest eventRequest) async {

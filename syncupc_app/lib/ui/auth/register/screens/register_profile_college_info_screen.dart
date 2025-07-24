@@ -4,7 +4,7 @@ import 'package:syncupc/design_system/atoms/text_field.dart';
 import 'package:syncupc/features/auth/providers/register_providers.dart';
 
 import '../../../../design_system/molecules/drop_down.dart';
-import '../../../../features/home/models/dropdown_item.dart';
+import '../../../../design_system/models/dropdown_item.dart';
 
 class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
   const RegisterProfileCollegeInfoScreen({super.key});

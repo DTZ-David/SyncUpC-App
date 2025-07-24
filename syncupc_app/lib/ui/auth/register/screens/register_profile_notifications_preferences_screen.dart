@@ -7,6 +7,7 @@ import 'package:syncupc/utils/loading_screens/loading_dialog_helpers.dart';
 import 'package:syncupc/utils/loading_screens/loading_types.dart';
 import '../../../../config/providers/register_providers.dart';
 import '../../../../features/auth/providers/register_providers.dart';
+import '../../../../utils/popup_utils.dart';
 
 class RegisterProfileNotificationsPreferencesScreen extends ConsumerWidget {
   const RegisterProfileNotificationsPreferencesScreen({super.key});
@@ -73,31 +74,33 @@ class RegisterProfileNotificationsPreferencesScreen extends ConsumerWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: PrimaryButton(
-                    text: "Siguiente",
-                    variant: ButtonVariant.filled,
-                    onPressed: () async {
-                      context.showLoadingDialog(type: LoadingType.simple);
+                  text: "Siguiente",
+                  variant: ButtonVariant.filled,
+                  onPressed: () async {
+                    context.showLoadingDialog(type: LoadingType.simple);
 
-                      final formData = ref.read(registerFormProvider);
-                      final success = await ref
-                          .read(registerControllerProvider.notifier)
-                          .register(formData);
+                    final formData = ref.read(registerFormProvider);
+                    final success = await ref
+                        .read(registerControllerProvider.notifier)
+                        .register(formData);
 
-                      context.hideLoadingDialog();
+                    context.hideLoadingDialog();
 
-                      if (success) {
-                        context.go('/'); // o donde corresponda
-                      } else {
-                        final error =
-                            ref.read(registerControllerProvider).errorMessage ??
-                                'Error al registrar';
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text(error),
-                              backgroundColor: Colors.red),
-                        );
-                      }
-                    }),
+                    if (success) {
+                      context.go('/'); // o donde corresponda
+                    } else {
+                      final error =
+                          ref.read(registerControllerProvider).errorMessage ??
+                              'Error al registrar';
+
+                      PopupUtils.showError(
+                        context,
+                        message: error,
+                        subtitle: 'Por favor intenta de nuevo',
+                      );
+                    }
+                  },
+                ),
               ),
             ),
           ],

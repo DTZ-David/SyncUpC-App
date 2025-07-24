@@ -4,7 +4,7 @@
 
 import '../../../design_system/molecules/drop_down.dart';
 import '../../../features/auth/providers/career_provider.dart';
-import '../../../features/home/models/dropdown_item.dart';
+import '../../../design_system/models/dropdown_item.dart';
 import 'register_event_exports.dart';
 import 'selected_career_chip.dart';
 

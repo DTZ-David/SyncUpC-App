@@ -3,11 +3,11 @@ import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/atoms/text_field.dart';
 import 'package:syncupc/features/auth/controllers/login_controller.dart';
+import 'package:syncupc/utils/popup_utils.dart'; // Asegúrate de importar esto
 
 class LoginScreen extends ConsumerWidget {
   LoginScreen({super.key});
 
-  // Controladores como propiedades de la clase
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -19,12 +19,10 @@ class LoginScreen extends ConsumerWidget {
       if (current.errorMessage != null &&
           current.errorMessage != previous?.errorMessage &&
           !current.isLoading) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: AppText(current.errorMessage!),
-            backgroundColor: AppColors.error,
-            duration: const Duration(seconds: 3),
-          ),
+        PopupUtils.showError(
+          context,
+          message: current.errorMessage!,
+          subtitle: 'Intenta de nuevo',
         );
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -32,10 +30,9 @@ class LoginScreen extends ConsumerWidget {
         });
       }
 
-      // 🎯 Agrega este para redirigir
       if (current.isAuthenticated &&
           current.isAuthenticated != previous?.isAuthenticated) {
-        context.go('/'); // ✅ Redirige al home
+        context.go('/');
       }
     });
 
@@ -44,11 +41,10 @@ class LoginScreen extends ConsumerWidget {
       final password = _passwordController.text.trim();
 
       if (email.isEmpty || password.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: AppText('Por favor completa todos los campos'),
-            backgroundColor: AppColors.error,
-          ),
+        PopupUtils.showWarning(
+          context,
+          message: 'Campos vacíos',
+          subtitle: 'Por favor completa todos los campos',
         );
         return;
       }
@@ -70,11 +66,12 @@ class LoginScreen extends ConsumerWidget {
                   ColorFilter.mode(AppColors.primary500, BlendMode.srcIn),
             ),
             const Padding(
-                padding: EdgeInsets.only(top: 60, bottom: 30),
-                child: AppText.heading1(
-                  "Iniciar Sesión",
-                  textAlign: TextAlign.center,
-                )),
+              padding: EdgeInsets.only(top: 60, bottom: 30),
+              child: AppText.heading1(
+                "Iniciar Sesión",
+                textAlign: TextAlign.center,
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(12),
               child: AppTextField(
@@ -100,9 +97,9 @@ class LoginScreen extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(top: 50, left: 12, right: 12),
               child: PrimaryButton(
-                text: "Iniciar Sesion",
+                text: "Iniciar Sesión",
                 variant: ButtonVariant.filled,
-                isLoading: authState.isLoading, // 🎯 Usar el loading del botón
+                isLoading: authState.isLoading,
                 onPressed: handleLogin,
               ),
             ),

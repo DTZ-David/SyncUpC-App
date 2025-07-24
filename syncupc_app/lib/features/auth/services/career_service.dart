@@ -3,7 +3,7 @@ import 'package:syncupc/config/constants/app.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import '../models/career.dart';
+import '../../home/models/career.dart';
 
 class CareerService {
   Future<List<Career>> fetchCareers() async {

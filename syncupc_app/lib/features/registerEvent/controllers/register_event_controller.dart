@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:syncupc/features/auth/models/event_request.dart';
+import 'package:syncupc/features/registerEvent/models/event_request.dart';
 import 'package:syncupc/features/auth/providers/auth_providers.dart';
-import 'package:syncupc/features/auth/services/event_request_service.dart';
-import '../models/register_state.dart';
+import 'package:syncupc/features/registerEvent/services/event_request_service.dart';
+import '../../auth/models/register_state.dart';
 
 part 'register_event_controller.g.dart';
 

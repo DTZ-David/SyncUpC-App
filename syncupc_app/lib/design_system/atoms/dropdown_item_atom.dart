@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../config/exports/design_system_barrel.dart';
-import '../../features/home/models/dropdown_item.dart';
+import '../models/dropdown_item.dart';
 
 class DropdownItemAtom<T> extends StatelessWidget {
   final DropdownItem<T> item;

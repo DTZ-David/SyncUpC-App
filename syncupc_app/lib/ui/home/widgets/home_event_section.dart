@@ -1,10 +1,13 @@
+import 'package:intl/intl.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing_for_provider.dart';
 import 'package:syncupc/design_system/molecules/event_card.dart';
 
+import '../../../features/home/models/event_model.dart';
+
 class HomeEventsSection extends ConsumerWidget {
   final String title;
-  final List<Map<String, dynamic>> events;
+  final List<EventModel> events;
 
   const HomeEventsSection({
     super.key,
@@ -44,17 +47,22 @@ class HomeEventsSection extends ConsumerWidget {
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    context.push('/event/:id');
+                    context.push(
+                      '/event/details',
+                      extra: event,
+                    );
                   },
                   child: EventCard(
-                    title: event['title'],
-                    time: event['time'],
-                    location: event['location'],
-                    attendeesText: event['attendeesText'],
-                    totalAttendees: event['totalAttendees'],
-                    imageUrl: event['imageUrl'],
-                    attendeeAvatars:
-                        List<String>.from(event['attendeeAvatars'] ?? []),
+                    title: event.eventTitle,
+                    time: capitalizeFirstLetter(
+                        DateFormat('EEEE, d \'de\' MMMM', 'es')
+                            .format(event.eventDate)),
+                    location: event.eventLocation,
+                    attendeesText: 'Participantes', // Puedes mejorar esto
+                    totalAttendees: event.participantProfilePictures.length,
+                    imageUrl:
+                        event.imageUrls.isNotEmpty ? event.imageUrls.first : '',
+                    attendeeAvatars: event.participantProfilePictures,
                   ),
                 ),
               );
@@ -64,4 +72,9 @@ class HomeEventsSection extends ConsumerWidget {
       ],
     );
   }
+}
+
+String capitalizeFirstLetter(String text) {
+  if (text.isEmpty) return text;
+  return text[0].toUpperCase() + text.substring(1);
 }

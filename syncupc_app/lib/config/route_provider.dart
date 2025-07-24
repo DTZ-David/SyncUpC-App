@@ -8,6 +8,7 @@ import 'package:syncupc/ui/search/screens/search_screen.dart';
 import 'package:syncupc/ui/settings/screens/edit_profile_screen.dart';
 import 'package:syncupc/ui/settings/screens/history_screen.dart';
 import 'package:syncupc/ui/settings/screens/settings_screen.dart';
+import '../features/home/models/event_model.dart';
 import './exports/routing_for_provider.dart';
 import './exports/pages_barrel.dart';
 import './exports/design_system_barrel.dart';
@@ -92,13 +93,14 @@ GoRouter appRouter(Ref ref) {
         ],
       ),
       GoRoute(
-        path: '/event/:id',
+        path: '/event/details',
         name: 'event-detail',
         builder: (context, state) {
-          //final eventId = state.pathParameters['id']!;
-          return EventDetailsScreen();
+          final event = state.extra as EventModel;
+          return EventDetailsScreen(event);
         },
       ),
+
       GoRoute(
         path: '/event_confirm',
         name: 'event_confirm',

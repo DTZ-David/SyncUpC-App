@@ -37,7 +37,23 @@ class EventCard extends StatelessWidget {
         surfaceTintColor: AppColors.white,
         child: Column(
           children: [
-            Image.asset(imageUrl!, fit: BoxFit.cover),
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
+              ),
+              child: Image.network(
+                imageUrl!,
+                height: 140,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  height: 120,
+                  color: Colors.grey[300],
+                  child: Icon(Icons.image_not_supported),
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 2),
               child: Row(

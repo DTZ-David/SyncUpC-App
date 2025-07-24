@@ -43,7 +43,12 @@ class HomeHeader extends StatelessWidget {
         // Foto de perfil
         CircleAvatar(
           radius: 24,
-          backgroundImage: AssetImage(profileImagePath),
+          backgroundImage: profileImagePath.startsWith('http')
+              ? NetworkImage(profileImagePath)
+              : AssetImage(profileImagePath),
+          onBackgroundImageError: (_, __) {
+            debugPrint('Error loading profile image');
+          },
         )
       ],
     );

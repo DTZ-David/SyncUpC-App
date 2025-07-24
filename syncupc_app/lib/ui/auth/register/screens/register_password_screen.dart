@@ -6,6 +6,8 @@ import 'package:syncupc/features/auth/providers/register_providers.dart';
 import 'package:syncupc/utils/loading_screens/loading_dialog_helpers.dart';
 import 'package:syncupc/utils/loading_screens/loading_types.dart';
 
+import '../../../../utils/popup_utils.dart';
+
 class RegisterPasswordScreen extends ConsumerStatefulWidget {
   const RegisterPasswordScreen({super.key});
 
@@ -21,30 +23,31 @@ class _RegisterPasswordScreenState
 
   final _passwordRegex = RegExp(r'^(?=.*\d).{8,}$');
 
-  void _showError(String msg) => ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(msg),
-          backgroundColor: Colors.red,
-        ),
-      );
+  void _showError(BuildContext context, String msg) {
+    PopupUtils.showError(
+      context,
+      message: msg,
+      subtitle: 'Por favor intenta de nuevo',
+    );
+  }
 
   Future<void> _handleNext() async {
     final pass = _passwordCtrl.text;
     final confirm = _confirmCtrl.text;
 
     if (pass.isEmpty || confirm.isEmpty) {
-      _showError('Completa ambos campos de contraseña.');
+      _showError(context, 'Completa ambos campos de contraseña.');
       return;
     }
 
     if (!_passwordRegex.hasMatch(pass)) {
-      _showError(
+      _showError(context,
           'La contraseña debe tener mínimo 8 caracteres y al menos un número.');
       return;
     }
 
     if (pass != confirm) {
-      _showError('Las contraseñas no coinciden.');
+      _showError(context, 'Las contraseñas no coinciden.');
       return;
     }
 

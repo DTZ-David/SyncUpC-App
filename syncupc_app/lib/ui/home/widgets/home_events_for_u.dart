@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/design_system/molecules/event_for_u_card.dart';
+import 'package:syncupc/features/home/models/event_model.dart';
 
 class HomeEventsForU extends StatelessWidget {
   final String title;
-  final List<Map<String, dynamic>> events;
+  final List<EventModel> events;
 
   const HomeEventsForU({
     super.key,
@@ -46,14 +48,18 @@ class HomeEventsForU extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: EventForUCard(
-                title: event['title'],
-                timeText: '9 de Enero',
-                timeHour: '9:00 PM',
-                location: event['location'],
-                attendeesText: event['attendeesText'],
-                totalAttendees: event['totalAttendees'],
-                attendeeAvatars: event['attendeeAvatars'],
+                title: event.eventTitle,
+                timeText: capitalizeFirstLetter(
+                    DateFormat('EEEE, d \'de\' MMMM', 'es')
+                        .format(event.eventDate)),
+                timeHour: DateFormat('h:mma', 'es')
+                    .format(event.eventDate)
+                    .toLowerCase(), // Ej: 4:03pm
                 isNearby: true,
+                location: event.eventLocation,
+                attendeesText: 'Participantes',
+                totalAttendees: event.participantProfilePictures.length,
+                attendeeAvatars: event.participantProfilePictures,
               ),
             );
           },
@@ -61,4 +67,9 @@ class HomeEventsForU extends StatelessWidget {
       ],
     );
   }
+}
+
+String capitalizeFirstLetter(String text) {
+  if (text.isEmpty) return text;
+  return text[0].toUpperCase() + text.substring(1);
 }
