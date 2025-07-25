@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:syncupc/design_system/protons/colors.dart';
 import '../features/auth/providers/auth_providers.dart';
+import '../ui/home/widgets/confirm_scan_dialog.dart';
 import '../utils/bottom_navigation.dart';
 
 class MainNavigationWrapper extends ConsumerWidget {
@@ -18,7 +19,6 @@ class MainNavigationWrapper extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
 
-    // Mientras el usuario aún no está cargado
     if (user == null) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -27,46 +27,74 @@ class MainNavigationWrapper extends ConsumerWidget {
 
     final isAuthorized = user.role == 'Student';
 
-    return Scaffold(
-      // Estas propiedades son clave para mantener el FAB fijo
-      resizeToAvoidBottomInset: false, // Evita que el FAB suba con el teclado
-      extendBody: true, // Permite que el body se extienda detrás del bottom nav
-
-      body: child,
-
-      floatingActionButton: isAuthorized
-          ? Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+    return Stack(
+      children: [
+        Scaffold(
+          resizeToAvoidBottomInset: false,
+          extendBody: true,
+          body: child,
+          floatingActionButton: isAuthorized
+              ? Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: FloatingActionButton(
-                backgroundColor: AppColors.white,
+                  child: FloatingActionButton(
+                    backgroundColor: AppColors.white,
+                    onPressed: () {
+                      context.push('/register_event');
+                    },
+                    shape: const CircleBorder(),
+                    elevation: 0,
+                    child: SvgPicture.asset(
+                      'assets/images/add_event.svg',
+                      width: 28,
+                      height: 28,
+                    ),
+                  ),
+                )
+              : null,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: BottomNavigation(isAuthorized: isAuthorized),
+        ),
 
-                onPressed: () {
-                  context.push('/register_event');
-                },
-                shape: const CircleBorder(),
-                elevation:
-                    0, // Quitamos la elevación default ya que usamos BoxShadow
-                child: SvgPicture.asset(
-                  'assets/images/add_event.svg',
-                  width: 28,
-                  height: 28,
+        // FAB escáner flotando arriba a la derecha en toda la app
+        Positioned(
+          bottom: 80,
+          right: 16,
+          child: FloatingActionButton(
+            heroTag: 'scanner',
+            backgroundColor: Colors.white,
+            shape: const CircleBorder(),
+            elevation: 4,
+            onPressed: () {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => ConfirmScanDialog(
+                  onCancel: () => Navigator.of(context).pop(),
+                  onContinue: () {
+                    Navigator.of(context).pop();
+                    context.push('/scanner');
+                  },
                 ),
-              ),
-            )
-          : null,
-
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
-      bottomNavigationBar: BottomNavigation(isAuthorized: isAuthorized),
+              );
+            },
+            child: SvgPicture.asset(
+              'assets/images/scanner.svg',
+              width: 28,
+              height: 28,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

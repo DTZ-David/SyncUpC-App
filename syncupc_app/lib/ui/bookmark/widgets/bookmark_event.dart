@@ -1,51 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
+import 'package:syncupc/features/bookmarks/providers/bookmarks_providers.dart';
+import 'package:syncupc/features/home/models/event_model.dart';
 
-class BookmarkEvent extends StatelessWidget {
-  final String day;
-  final String date;
-  final String month;
-  final String title;
-  final String location;
-  final String time;
-  final bool isFavorite;
+import '../../../utils/popup_utils.dart';
+
+class BookmarkEvent extends ConsumerWidget {
+  final EventModel event;
 
   const BookmarkEvent({
     super.key,
-    required this.day,
-    required this.date,
-    required this.month,
-    required this.title,
-    required this.location,
-    required this.time,
-    this.isFavorite = false,
+    required this.event,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final date = event.eventDate;
+    final day = DateFormat.E('es').format(date); // Ej: lun
+    final dayNumber = DateFormat.d().format(date); // Ej: 24
+    final month = DateFormat.MMM('es').format(date); // Ej: jul
+    final time = DateFormat.Hm().format(date); // Ej: 14:30
+
+    return GestureDetector(
+      onTap: () {
+        context.push(
+          '/event/details',
+          extra: event,
+        );
+      },
+      child: Container(
         padding: const EdgeInsets.all(12),
         margin: const EdgeInsets.symmetric(vertical: 8),
-        decoration: const BoxDecoration(
-          color: Colors.transparent,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 📅 Fecha con ancho fijo
+            // 📅 Fecha
             SizedBox(
-              width: 64, // Ajusta según lo que necesites
+              width: 64,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(day,
-                      style: const TextStyle(fontSize: 14, color: Colors.grey)),
-                  Text(date,
-                      style: const TextStyle(
-                          fontSize: 28, fontWeight: FontWeight.bold)),
-                  Text(month,
-                      style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                  AppText.body2(
+                    day.toUpperCase(),
+                  ),
+                  AppText.heading3(
+                    dayNumber,
+                  ),
+                  AppText.body1(
+                    month.toUpperCase(),
+                  ),
                 ],
               ),
             ),
@@ -63,14 +81,14 @@ class BookmarkEvent extends StatelessWidget {
               ),
             ),
 
-            // 📋 Información del evento
+            // 📋 Info evento
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold)),
+                  AppText.body1(
+                    event.eventTitle,
+                  ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
@@ -85,14 +103,14 @@ class BookmarkEvent extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Expanded(
-                        child: Text(location,
-                            style: const TextStyle(
-                                fontSize: 13, color: AppColors.neutral400),
-                            overflow: TextOverflow.ellipsis),
+                        child: AppText.body3(
+                          event.eventLocation,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
                       SvgPicture.asset(
@@ -105,9 +123,9 @@ class BookmarkEvent extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 4),
-                      Text(time,
-                          style: const TextStyle(
-                              fontSize: 13, color: AppColors.neutral400)),
+                      AppText.body3(
+                        time,
+                      ),
                     ],
                   ),
                 ],
@@ -115,11 +133,31 @@ class BookmarkEvent extends StatelessWidget {
             ),
 
             const SizedBox(width: 8),
-            Icon(
-              Icons.favorite,
-              color: isFavorite ? Colors.red : Colors.grey.shade300,
-            )
+            GestureDetector(
+              onTap: () async {
+                try {
+                  await ref.read(removeSavedEventsProvider(event.id).future);
+                  PopupUtils.showSuccess(
+                    context,
+                    message: '¡Evento eliminado exitosamente!',
+                    subtitle: 'Tu evento ha sido actualizado',
+                    duration: const Duration(seconds: 2),
+                  );
+                  ref.invalidate(getSavedEventsProvider);
+                } catch (e) {
+                  PopupUtils.showError(
+                    context,
+                    message: e.toString(),
+                    subtitle: 'Por favor intenta de nuevo',
+                    duration: const Duration(seconds: 2),
+                  );
+                }
+              },
+              child: const Icon(Icons.favorite, color: Colors.red),
+            ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }

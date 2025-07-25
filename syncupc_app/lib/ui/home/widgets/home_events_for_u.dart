@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/design_system/molecules/event_for_u_card.dart';
 import 'package:syncupc/features/home/models/event_model.dart';
 
-class HomeEventsForU extends StatelessWidget {
+class HomeEventsNearby extends StatelessWidget {
   final String title;
   final List<EventModel> events;
 
-  const HomeEventsForU({
+  const HomeEventsNearby({
     super.key,
     required this.title,
     required this.events,
@@ -47,7 +48,13 @@ class HomeEventsForU extends StatelessWidget {
             final event = events[index];
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: EventForUCard(
+              child: EventsNearby(
+                onTap: () {
+                  context.push(
+                    '/event/details',
+                    extra: event,
+                  );
+                },
                 title: event.eventTitle,
                 timeText: capitalizeFirstLetter(
                     DateFormat('EEEE, d \'de\' MMMM', 'es')

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
+import 'package:syncupc/features/home/providers/event_providers.dart';
 
-class HomeCategories extends StatelessWidget {
+class HomeCategories extends ConsumerWidget {
   const HomeCategories({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tags = ref.watch(eventTagsProvider);
+
     return Column(
       children: [
         Row(
@@ -24,16 +28,15 @@ class HomeCategories extends StatelessWidget {
         const SizedBox(height: 12),
         SizedBox(
           height: 36,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              _buildCategory("Todas"),
-              _buildCategory("Cultura"),
-              _buildCategory("Sociales"),
-              _buildCategory("Deportes"),
-              _buildCategory("Conciertos"),
-            ],
-          ),
+          child: tags.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _buildCategory("Todas"),
+                    ...tags.map((tag) => _buildCategory(tag)),
+                  ],
+                ),
         ),
       ],
     );

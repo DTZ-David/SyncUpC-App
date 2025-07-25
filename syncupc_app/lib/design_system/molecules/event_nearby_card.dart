@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/design_system/molecules/attendees_avatars.dart';
 
-class EventForUCard extends StatelessWidget {
+class EventsNearby extends StatelessWidget {
   final String title;
   final String timeText;
   final String timeHour;
@@ -14,7 +14,7 @@ class EventForUCard extends StatelessWidget {
   final VoidCallback? onTap;
   final bool isNearby;
 
-  const EventForUCard({
+  const EventsNearby({
     super.key,
     required this.title,
     required this.timeText,

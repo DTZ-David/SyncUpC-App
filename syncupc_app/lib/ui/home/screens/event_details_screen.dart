@@ -4,11 +4,13 @@ import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/molecules/attendees_avatars.dart';
 import 'package:syncupc/ui/home/widgets/confirmation_message.dart';
-
+import 'package:syncupc/utils/popup_utils.dart';
+import '../../../features/bookmarks/providers/bookmarks_providers.dart';
 import '../../../features/home/models/event_model.dart';
 
 class EventDetailsScreen extends ConsumerWidget {
   final EventModel event;
+
   const EventDetailsScreen(this.event, {super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,18 +53,41 @@ class EventDetailsScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 25, right: 20),
-                    child: Row(
-                      children: [
-                        _circleIcon('assets/images/share.svg'),
-                        const SizedBox(width: 8),
-                        _circleIcon('assets/images/foro.svg'),
-                        const SizedBox(width: 8),
-                        _circleIcon('assets/images/bookmark_01.svg'),
-                      ],
-                    ),
+                  _circleIconButton(
+                      icon: 'assets/images/share.svg', onTap: () {}),
+                  const SizedBox(width: 8),
+                  _circleIconButton(
+                      icon: 'assets/images/foro.svg',
+                      onTap: () {
+                        context.push('/event/forum');
+                      }),
+                  const SizedBox(width: 8),
+                  _circleIconButton(
+                    icon: 'assets/images/bookmark_01.svg',
+                    color: event.isSaved
+                        ? AppColors.primary200
+                        : AppColors.neutral400,
+                    onTap: () async {
+                      try {
+                        await ref.read(addEventFavProvider(event.id).future);
+
+                        PopupUtils.showSuccess(
+                          context,
+                          message: '¡Evento guardado exitosamente!',
+                          subtitle: 'Tu evento ha sido actualizado',
+                          duration: const Duration(seconds: 2),
+                        );
+                      } catch (e) {
+                        PopupUtils.showError(
+                          context,
+                          message: e.toString(),
+                          subtitle: 'Por favor intenta de nuevo',
+                          duration: const Duration(seconds: 2),
+                        );
+                      }
+                    },
                   ),
+                  const SizedBox(width: 8),
                 ],
               ),
               Padding(
@@ -157,20 +182,29 @@ class EventDetailsScreen extends ConsumerWidget {
   }
 }
 
-Widget _circleIcon(String icon) {
-  return Container(
-    height: 40,
-    width: 40,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      border: Border.all(color: Colors.grey.shade300),
-    ),
-    child: Center(
-      child: SvgPicture.asset(
-        icon,
-        width: 20,
-        height: 20,
-        fit: BoxFit.scaleDown,
+Widget _circleIconButton({
+  required String icon,
+  required VoidCallback onTap,
+  Color? color,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      height: 40,
+      width: 40,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Center(
+        child: SvgPicture.asset(
+          icon,
+          width: 20,
+          height: 20,
+          fit: BoxFit.scaleDown,
+          colorFilter:
+              color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
+        ),
       ),
     ),
   );

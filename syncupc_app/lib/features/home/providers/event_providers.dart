@@ -20,3 +20,21 @@ Future<List<EventModel>> getAllEvents(Ref ref) async {
   final token = ref.read(authTokenProvider);
   return await EventService().getAllEvents(token!);
 }
+
+@riverpod
+List<String> eventTags(Ref ref) {
+  final eventsAsync = ref.watch(getAllEventsProvider);
+
+  return eventsAsync.maybeWhen(
+    data: (events) {
+      final tagsSet = <String>{};
+
+      for (final event in events) {
+        tagsSet.addAll(event.tags);
+      }
+
+      return tagsSet.toList();
+    },
+    orElse: () => [],
+  );
+}

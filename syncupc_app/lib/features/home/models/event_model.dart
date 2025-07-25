@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 
 class EventModel {
+  final String id;
   final String eventTitle;
   final String eventObjective;
   final DateTime eventDate;
@@ -12,8 +13,12 @@ class EventModel {
   final String additionalDetails;
   final List<String> imageUrls;
   final List<String> participantProfilePictures;
+  final List<String> tags;
+  final bool isSaved;
 
   EventModel({
+    required this.isSaved,
+    required this.id,
     required this.eventTitle,
     required this.eventObjective,
     required this.eventDate,
@@ -24,11 +29,13 @@ class EventModel {
     required this.targetGeneral,
     required this.additionalDetails,
     required this.imageUrls,
+    required this.tags,
     required this.participantProfilePictures,
   });
 
   factory EventModel.fromJson(Map<String, dynamic> json) {
     return EventModel(
+      id: json['id'] ?? '',
       eventTitle: json['eventTitle'] ?? '',
       eventObjective: json['eventObjective'] ?? '',
       eventDate: _parseFlexibleDate(json['eventDate']), // <- aquí
@@ -41,11 +48,14 @@ class EventModel {
       imageUrls: List<String>.from(json['imageUrls'] ?? []),
       participantProfilePictures:
           List<String>.from(json['participantProfilePictures'] ?? []),
+      tags: List<String>.from(json['tags'] ?? []),
+      isSaved: json['isSaved'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'eventTitle': eventTitle,
       'eventObjective': eventObjective,
       'eventDate': eventDate.toIso8601String(),
@@ -57,6 +67,8 @@ class EventModel {
       'additionalDetails': additionalDetails,
       'imageUrls': imageUrls,
       'participantProfilePictures': participantProfilePictures,
+      'tags': tags,
+      'isSaved': isSaved
     };
   }
 

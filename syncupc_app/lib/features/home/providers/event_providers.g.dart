@@ -39,5 +39,21 @@ final getAllEventsProvider = FutureProvider<List<EventModel>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GetAllEventsRef = FutureProviderRef<List<EventModel>>;
+String _$eventTagsHash() => r'4f70588b8f16578c0e3b22d4f14d79da0baa8b0f';
+
+/// See also [eventTags].
+@ProviderFor(eventTags)
+final eventTagsProvider = AutoDisposeProvider<List<String>>.internal(
+  eventTags,
+  name: r'eventTagsProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$eventTagsHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef EventTagsRef = AutoDisposeProviderRef<List<String>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

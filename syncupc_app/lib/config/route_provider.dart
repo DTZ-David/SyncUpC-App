@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:syncupc/ui/bookmark/screens/bookmark_screen.dart';
+import 'package:syncupc/ui/forum/screens/forum_post_screen.dart';
+import 'package:syncupc/ui/forum/screens/forum_screen.dart';
 import 'package:syncupc/ui/home/screens/event_details_screen.dart';
 import 'package:syncupc/ui/home/screens/event_confirm_screen.dart';
 import 'package:syncupc/ui/home/screens/scanner_screen.dart';
@@ -100,7 +102,22 @@ GoRouter appRouter(Ref ref) {
           return EventDetailsScreen(event);
         },
       ),
-
+      GoRoute(
+        path: '/event/forum',
+        name: 'event-forum',
+        builder: (context, state) {
+          //final event = state.extra as EventModel;
+          return ForumScreen();
+        },
+      ),
+      GoRoute(
+        path: '/event/forum/id',
+        name: 'event-forum-id',
+        builder: (context, state) {
+          //final event = state.extra as EventModel;
+          return ForumPostScreen(postTitle: "Test");
+        },
+      ),
       GoRoute(
         path: '/event_confirm',
         name: 'event_confirm',
