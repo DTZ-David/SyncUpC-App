@@ -59,7 +59,7 @@ class EventDetailsScreen extends ConsumerWidget {
                   _circleIconButton(
                       icon: 'assets/images/foro.svg',
                       onTap: () {
-                        context.push('/event/forum');
+                        context.push('/event/forum', extra: event);
                       }),
                   const SizedBox(width: 8),
                   _circleIconButton(

@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:syncupc/features/forum/models/forum_model.dart';
 import 'package:syncupc/ui/bookmark/screens/bookmark_screen.dart';
 import 'package:syncupc/ui/forum/screens/forum_post_screen.dart';
 import 'package:syncupc/ui/forum/screens/forum_screen.dart';
@@ -11,6 +12,7 @@ import 'package:syncupc/ui/settings/screens/edit_profile_screen.dart';
 import 'package:syncupc/ui/settings/screens/history_screen.dart';
 import 'package:syncupc/ui/settings/screens/settings_screen.dart';
 import '../features/home/models/event_model.dart';
+import '../ui/forum/screens/create_topic_screen.dart';
 import './exports/routing_for_provider.dart';
 import './exports/pages_barrel.dart';
 import './exports/design_system_barrel.dart';
@@ -106,16 +108,24 @@ GoRouter appRouter(Ref ref) {
         path: '/event/forum',
         name: 'event-forum',
         builder: (context, state) {
-          //final event = state.extra as EventModel;
-          return ForumScreen();
+          final event = state.extra as EventModel;
+          return ForumScreen(event.id);
         },
       ),
       GoRoute(
-        path: '/event/forum/id',
+        path: '/event/forum/createTopic',
+        name: 'event-forum-createTopic',
+        builder: (context, state) {
+          final event = state.extra as String;
+          return CreateTopicScreen(event);
+        },
+      ),
+      GoRoute(
+        path: '/event/forum/forumPostDetails',
         name: 'event-forum-id',
         builder: (context, state) {
-          //final event = state.extra as EventModel;
-          return ForumPostScreen(postTitle: "Test");
+          final forum = state.extra as ForumModel;
+          return ForumPostScreen(forum: forum);
         },
       ),
       GoRoute(

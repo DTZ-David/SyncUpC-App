@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
-import 'package:syncupc/design_system/molecules/event_for_u_card.dart';
+import 'package:syncupc/design_system/molecules/event_nearby_card.dart';
 import 'package:syncupc/features/home/models/event_model.dart';
 
 class HomeEventsNearby extends StatelessWidget {
