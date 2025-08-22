@@ -87,7 +87,7 @@ class RegisterProfileNotificationsPreferencesScreen extends ConsumerWidget {
                     context.hideLoadingDialog();
 
                     if (success) {
-                      context.go('/'); // o donde corresponda
+                      context.go('/login');
                     } else {
                       final error =
                           ref.read(registerControllerProvider).errorMessage ??

@@ -19,7 +19,7 @@ class BookmarkEvent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final date = event.eventDate;
+    final date = event.eventStartDate;
     final day = DateFormat.E('es').format(date); // Ej: lun
     final dayNumber = DateFormat.d().format(date); // Ej: 24
     final month = DateFormat.MMM('es').format(date); // Ej: jul

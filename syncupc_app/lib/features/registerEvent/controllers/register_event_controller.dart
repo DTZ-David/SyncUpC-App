@@ -16,7 +16,7 @@ class RegisterEventController extends _$RegisterEventController {
     return const RegisterState();
   }
 
-  Future<bool> registerEvent(EventRequest request) async {
+  Future<String?> registerEvent(EventRequest request) async {
     final token = ref.read(authTokenProvider);
 
     if (token == null) {
@@ -24,7 +24,7 @@ class RegisterEventController extends _$RegisterEventController {
         isLoading: false,
         errorMessage: 'No hay token de autenticación',
       );
-      return false;
+      return null;
     }
 
     state = state.copyWith(
@@ -34,19 +34,17 @@ class RegisterEventController extends _$RegisterEventController {
     );
 
     try {
-      // Llamar al servicio
-      await _registerService.registerEvent(token, request);
+      // Aquí modificamos para que retorne el ID
+      final eventId = await _registerService.registerEvent(token, request);
 
-      // Si llegamos aquí, fue exitoso
       state = state.copyWith(
         isLoading: false,
         isSuccess: true,
-        errorMessage: null, // Asegurar que no hay error
+        errorMessage: null,
       );
 
-      return true;
+      return eventId;
     } catch (e) {
-      // Manejo de errores más específico
       String errorMessage = 'Error inesperado al crear el evento';
 
       if (e.toString().contains('Sin conexión a internet')) {
@@ -63,7 +61,7 @@ class RegisterEventController extends _$RegisterEventController {
         errorMessage: errorMessage,
       );
 
-      return false;
+      return null;
     }
   }
 

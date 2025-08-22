@@ -56,7 +56,7 @@ class HomeEventsSection extends ConsumerWidget {
                     title: event.eventTitle,
                     time: capitalizeFirstLetter(
                         DateFormat('EEEE, d \'de\' MMMM', 'es')
-                            .format(event.eventDate)),
+                            .format(event.eventStartDate)),
                     location: event.eventLocation,
                     attendeesText: 'Participantes', // Puedes mejorar esto
                     totalAttendees: event.participantProfilePictures.length,

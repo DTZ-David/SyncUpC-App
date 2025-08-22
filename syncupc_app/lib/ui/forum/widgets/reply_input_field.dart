@@ -14,7 +14,7 @@ class ReplyInputField extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
-    final _contentController = TextEditingController();
+    final contentController = TextEditingController();
 
     return Container(
       color: AppColors.white,
@@ -33,7 +33,7 @@ class ReplyInputField extends ConsumerWidget {
           const SizedBox(width: 12),
           Expanded(
             child: AppTextField(
-                hintText: "Deja tu comentario", controller: _contentController),
+                hintText: "Deja tu comentario", controller: contentController),
           ),
           const SizedBox(width: 8),
           Container(
@@ -44,13 +44,14 @@ class ReplyInputField extends ConsumerWidget {
             child: IconButton(
               icon: const Icon(Icons.send, color: AppColors.white, size: 20),
               onPressed: () async {
-                final content = _contentController.text.trim();
+                final content = contentController.text.trim();
 
                 final request =
                     CommentRequest(forumId: forumId, content: content);
 
                 try {
                   await ref.read(addcommentProvider(request).future);
+                  ref.invalidate(getalltopicsforeventProvider);
                   PopupUtils.showSuccess(
                     context,
                     message: 'Ya mandamos tu comentario!',

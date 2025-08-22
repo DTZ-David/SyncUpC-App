@@ -7,7 +7,7 @@ part of 'register_event_controller.dart';
 // **************************************************************************
 
 String _$registerEventControllerHash() =>
-    r'6eca2cd56f5b53479e2f6d828dbd6059c1f40b1b';
+    r'aabc8e4c5beb3b91872d2c4f0efa068a9e62c1a4';
 
 /// See also [RegisterEventController].
 @ProviderFor(RegisterEventController)

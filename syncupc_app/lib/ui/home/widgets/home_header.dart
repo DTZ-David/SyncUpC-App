@@ -15,6 +15,10 @@ class HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasPhoto =
+        profileImagePath.startsWith('http') && profileImagePath.isNotEmpty;
+    final initials = _getInitials(userName);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -32,25 +36,38 @@ class HomeHeader extends StatelessWidget {
                 AppText(
                   location,
                   style: const TextStyle(
-                      fontSize: 10,
-                      color: AppColors.neutral900,
-                      fontFamily: 'Nunito'),
+                    fontSize: 10,
+                    color: AppColors.neutral900,
+                    fontFamily: 'Nunito',
+                  ),
                 ),
               ],
             ),
           ],
         ),
-        // Foto de perfil
+
+        // Avatar: con imagen o iniciales
         CircleAvatar(
           radius: 24,
-          backgroundImage: profileImagePath.startsWith('http')
-              ? NetworkImage(profileImagePath)
-              : AssetImage(profileImagePath),
-          onBackgroundImageError: (_, __) {
-            debugPrint('Error loading profile image');
-          },
-        )
+          backgroundColor: AppColors.primary200,
+          backgroundImage: hasPhoto ? NetworkImage(profileImagePath) : null,
+          child: !hasPhoto
+              ? Text(
+                  initials,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              : null,
+        ),
       ],
     );
+  }
+
+  String _getInitials(String name) {
+    final parts = name.trim().split(' ');
+    if (parts.length == 1) return parts[0].substring(0, 1).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
   }
 }

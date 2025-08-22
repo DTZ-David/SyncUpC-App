@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncupc/design_system/atoms/app_text.dart';
 import 'package:syncupc/design_system/protons/colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:syncupc/features/attendance/providers/attendance_providers.dart';
 import 'package:syncupc/ui/home/widgets/confirmation_message.dart';
 
 class ScannerScreen extends ConsumerStatefulWidget {
@@ -16,42 +17,29 @@ class ScannerScreen extends ConsumerStatefulWidget {
 class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   bool _hasScanned = false;
 
-  @override
-  void initState() {
-    super.initState();
-
-    // Simula el escaneo y redirige a los 5 segundos si no se ha escaneado nada
-    Future.delayed(const Duration(seconds: 5), () async {
-      if (!_hasScanned && mounted) {
-        _hasScanned = true;
-
-        // Mostramos el popup y esperamos a que se cierre
-        await showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => const AttendanceConfirmationPopup(
-            title: "QR Escaneado",
-          ),
-        );
-
-        // Luego navegamos
-        if (mounted) {
-          context.go("/event_confirm");
-        }
-      }
-    });
-  }
-
-  void _onDetect(BarcodeCapture capture) {
+  void _onDetect(BarcodeCapture capture) async {
     final barcode = capture.barcodes.firstOrNull;
     if (barcode == null || _hasScanned) return;
 
+    final String? code = barcode.rawValue;
+    if (code == null) return;
+
     _hasScanned = true;
 
-    final String? code = barcode.rawValue;
+    debugPrint("Código escaneado: $code");
 
-    if (code != null) {
-      context.pop(); // o context.go('/some_screen');
+    final eventTitle = await ref.read(checkInProvider(code).future);
+    // Muestra el popup de confirmación
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AttendanceConfirmationPopup(
+        title: "QR Escaneado",
+      ),
+    );
+
+    if (mounted) {
+      context.go("/event_confirm", extra: eventTitle);
     }
   }
 

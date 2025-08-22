@@ -58,9 +58,9 @@ class HomeEventsNearby extends StatelessWidget {
                 title: event.eventTitle,
                 timeText: capitalizeFirstLetter(
                     DateFormat('EEEE, d \'de\' MMMM', 'es')
-                        .format(event.eventDate)),
+                        .format(event.eventStartDate)),
                 timeHour: DateFormat('h:mma', 'es')
-                    .format(event.eventDate)
+                    .format(event.eventStartDate)
                     .toLowerCase(), // Ej: 4:03pm
                 isNearby: true,
                 location: event.eventLocation,

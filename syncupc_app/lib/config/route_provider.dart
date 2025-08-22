@@ -132,8 +132,8 @@ GoRouter appRouter(Ref ref) {
         path: '/event_confirm',
         name: 'event_confirm',
         builder: (context, state) {
-          //final eventId = state.pathParameters['id']!;
-          return EventConfirm();
+          final eventTitle = state.extra as String;
+          return EventConfirm(eventTitle);
         },
       ),
       GoRoute(

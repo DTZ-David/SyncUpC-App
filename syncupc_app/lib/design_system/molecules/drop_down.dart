@@ -11,7 +11,7 @@ import '../atoms/form_error_atom.dart';
 class DropdownMolecule<T> extends StatefulWidget {
   final T? selectedValue;
   final List<DropdownItem<T>> items;
-  final Function(T?) onChanged;
+  final Function(T?)? onChanged;
   final String hintText;
   final String? labelText;
   final bool isRequired;
@@ -23,7 +23,7 @@ class DropdownMolecule<T> extends StatefulWidget {
     super.key,
     this.selectedValue,
     required this.items,
-    required this.onChanged,
+    this.onChanged,
     this.hintText = 'Selecciona una opción',
     this.labelText,
     this.isRequired = false,
@@ -106,7 +106,7 @@ class _DropdownMoleculeState<T> extends State<DropdownMolecule<T>>
       _isExpanded = false;
     });
     _animationController.reverse();
-    widget.onChanged(item.value);
+    widget.onChanged!(item.value);
   }
 
   Color get _borderColor {

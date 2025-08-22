@@ -4,7 +4,8 @@ import 'package:syncupc/utils/loading_screens/loading_dialog_helpers.dart';
 import 'package:syncupc/utils/loading_screens/loading_types.dart';
 
 class EventConfirm extends ConsumerWidget {
-  const EventConfirm({super.key});
+  final String eventTitle;
+  const EventConfirm(this.eventTitle, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,7 +15,7 @@ class EventConfirm extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(top: 250, right: 12, left: 12),
             child: AppText.heading1(
-                "Estas registrando tu asistencia para Seminario Summer Camp 2025"),
+                "Estas registrando tu asistencia para $eventTitle"),
           ),
           Padding(
             padding: const EdgeInsets.all(12),

@@ -19,7 +19,15 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           children: [
             Expanded(
+                child: RefreshIndicator(
+              onRefresh: () async {
+                ref.invalidate(getAllEventsForUProvider);
+                ref.invalidate(getAllEventsProvider);
+                ref.invalidate(
+                    currentUserProvider); // Opcional, si quieres también refrescar los datos del usuario
+              },
               child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,8 +35,7 @@ class HomeScreen extends ConsumerWidget {
                     HomeHeader(
                       userName: user?.name ?? 'Invitado',
                       location: "Valledupar",
-                      profileImagePath:
-                          user?.photo ?? 'assets/images/default_avatar.png',
+                      profileImagePath: user?.photo ?? '',
                     ),
                     const SizedBox(height: 24),
                     const SearchBarDesign(filter: true),
@@ -59,10 +66,16 @@ class HomeScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-            ),
+            )),
           ],
         ),
       ),
     );
+  }
+
+  String getInitials(String name) {
+    final parts = name.trim().split(' ');
+    if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
+    return (parts[0].substring(0, 1) + parts[1].substring(0, 1)).toUpperCase();
   }
 }

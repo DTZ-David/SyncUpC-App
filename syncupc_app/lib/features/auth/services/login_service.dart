@@ -6,8 +6,7 @@ import 'dart:convert';
 class LoginService {
   Future<Map<String, dynamic>> login(String username, String password) async {
     final url = Uri.parse('${AppConfig.baseUrl}/user/loginapp');
-    username = "hector.castano@unicesar.edu.co";
-    password = "dtz12345";
+
     try {
       final response = await http.post(
         url,

@@ -114,12 +114,12 @@ class EventDetailsScreen extends ConsumerWidget {
                 icon: 'assets/images/calendar.svg',
                 text: capitalizeFirstLetter(
                     DateFormat('EEEE, d \'de\' MMMM', 'es')
-                        .format(event.eventDate)),
+                        .format(event.eventStartDate)),
               ),
               _EventDetailRow(
                 icon: 'assets/images/clock_settings.svg',
                 text: DateFormat('h:mma', 'es')
-                    .format(event.eventDate)
+                    .format(event.eventStartDate)
                     .toLowerCase(),
                 iconColor: AppColors.primary200,
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../design_system/atoms/primary_button.dart';
 import '../../../features/forum/models/forum_request_model.dart';
 import '../../../features/forum/providers/forum_providers.dart';
@@ -66,7 +67,7 @@ class _CreateTopicScreenState extends ConsumerState<CreateTopicScreen> {
                         try {
                           await ref
                               .read(registerForumTopicProvider(request).future);
-
+                          ref.invalidate(getalltopicsforeventProvider);
                           if (mounted) {
                             PopupUtils.showSuccess(
                               context,
@@ -75,6 +76,7 @@ class _CreateTopicScreenState extends ConsumerState<CreateTopicScreen> {
                               duration: const Duration(seconds: 2),
                             );
                           }
+                          context.pop();
                         } catch (e) {
                           if (mounted) {
                             PopupUtils.showError(

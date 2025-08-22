@@ -5,6 +5,7 @@ import 'package:syncupc/features/auth/providers/register_providers.dart';
 
 import '../../../../design_system/molecules/drop_down.dart';
 import '../../../../design_system/models/dropdown_item.dart';
+import '../../../../features/auth/providers/career_provider.dart';
 
 class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
   const RegisterProfileCollegeInfoScreen({super.key});
@@ -18,31 +19,12 @@ class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String? selectedCareer;
-    final List<DropdownItem<String>> careers = [
-      DropdownItem(
-        value: 'ing_sistemas',
-        title: 'Ingeniería de Sistemas',
-        subtitle: 'Desarrollo de software y tecnología',
-      ),
-      DropdownItem(
-        value: 'ing_industrial',
-        title: 'Ingeniería Industrial',
-        subtitle: 'Optimización de procesos industriales',
-      ),
-      DropdownItem(
-        value: 'medicina',
-        title: 'Medicina',
-        subtitle: 'Ciencias de la salud',
-      ),
-      DropdownItem(
-        value: 'psicologia',
-        title: 'Psicología',
-        subtitle: 'Estudio del comportamiento humano',
-      ),
-    ];
     final phoneController = TextEditingController();
     final currentStep = getCurrentStep(context);
+    final careersAsync = ref.watch(getAllCareersProvider);
+
+    final formState = ref.watch(registerFormProvider);
+    final formNotifier = ref.read(registerFormProvider.notifier);
 
     return Scaffold(
       body: SafeArea(
@@ -55,7 +37,7 @@ class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
                 const SizedBox(height: 100),
                 Center(
                   child: StepIndicator(
-                    currentStep: currentStep - 1, // 0-based
+                    currentStep: currentStep - 1,
                     totalSteps: 3,
                   ),
                 ),
@@ -79,14 +61,40 @@ class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
                   labelText: "Escribe aquí tu número de telefono",
                 ),
                 const SizedBox(height: 24),
-                DropdownMolecule<String>(
-                  labelText: 'Carrera',
-                  hintText: 'Selecciona tu carrera',
-                  isRequired: true,
-                  selectedValue: selectedCareer,
-                  items: careers,
-                  onChanged: (String? career) {},
+
+                // Dropdown de carrera
+                careersAsync.when(
+                  data: (careers) {
+                    final items = careers
+                        .map(
+                          (career) => DropdownItem(
+                            value: career.id,
+                            title: career.name,
+                          ),
+                        )
+                        .toList();
+
+                    return DropdownMolecule<String>(
+                      labelText: 'Carrera',
+                      hintText: 'Selecciona tu carrera',
+                      isRequired: true,
+                      selectedValue: formState.careerId,
+                      items: items,
+                      onChanged: (val) {
+                        if (val != null) {
+                          formNotifier.setCareer(val);
+                        }
+                      },
+                    );
+                  },
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (err, stack) => AppText.body2(
+                    'Error al cargar carreras',
+                    color: Colors.red,
+                  ),
                 ),
+
                 Padding(
                   padding: const EdgeInsets.only(top: 40),
                   child: SizedBox(
@@ -95,15 +103,10 @@ class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
                       text: "Siguiente",
                       variant: ButtonVariant.filled,
                       onPressed: () {
-                        ref
-                            .read(registerFormProvider.notifier)
-                            .setPhoneNumber(phoneController.text.trim());
-                        ref
-                            .read(registerFormProvider.notifier)
-                            .setFaculty("685ad08eb1262f0763410dc5");
-                        ref
-                            .read(registerFormProvider.notifier)
-                            .setCareer("665f4d2d1c9d440001fcf001");
+                        formNotifier.setPhoneNumber(
+                          phoneController.text.trim(),
+                        );
+
                         context.push('/register/step/3');
                       },
                     ),

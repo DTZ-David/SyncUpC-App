@@ -58,6 +58,18 @@ class RegisterEventService {
 
     final controller = ref.read(registerEventControllerProvider.notifier);
     await controller.registerEvent(eventRequest);
+
+    // if (requiresRegistration && eventId != null && eventId.isNotEmpty) {
+    //   // await showDialog(
+    //   //   context: context,
+    //   //   barrierDismissible: false, // ← Para que no se cierre tocando fuera
+    //   //   builder: (_) => QrPopupDialog(eventId: eventId),
+    //   // );
+    //   return;
+    // } else {
+    //   _showError(context, 'No se pudo crear el evento. Intenta nuevamente.');
+    //   return;
+    // }
   }
 
   DateTime _combineDateAndTime(DateTime date, String time) {

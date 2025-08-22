@@ -1,11 +1,10 @@
 import 'package:syncupc/config/constants/app.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:syncupc/features/registerEvent/models/event_request.dart';
 
-class EventRequestService {
-  Future<String> registerEvent(String token, EventRequest eventRequest) async {
-    final url = Uri.parse('${AppConfig.baseUrl}/event/createevent');
+class AttendanceService {
+  Future<String> checkIn(String token, String eventId) async {
+    final url = Uri.parse('${AppConfig.baseUrl}/attendance/checkin');
 
     try {
       final response = await http.post(
@@ -14,17 +13,15 @@ class EventRequestService {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
-        body: json.encode(eventRequest.toJson()),
+        body: json.encode({
+          "eventId": eventId,
+        }),
       );
 
-      // Verificar códigos de éxito
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = json.decode(response.body);
-        return responseData['data']['id'];
-      }
-      // Códigos de error específicos
-      else if (response.statusCode == 400) {
-        // Error de validación
+        return responseData['data']['nombre'];
+      } else if (response.statusCode == 400) {
         try {
           final errorData = json.decode(response.body);
           final message = errorData['message'] ?? 'Datos inválidos';
@@ -39,17 +36,14 @@ class EventRequestService {
       } else if (response.statusCode == 500) {
         throw Exception('Error del servidor: Intenta más tarde');
       } else {
-        // Error genérico
         throw Exception('Error al crear evento (${response.statusCode})');
       }
     } on http.ClientException {
       throw Exception('Sin conexión a internet');
     } catch (e) {
-      // Si ya es una excepción que lanzamos, la re-lanzamos
       if (e.toString().startsWith('Exception:')) {
         rethrow;
       }
-      // Si es otro tipo de error, lo envolvemos
       throw Exception('Error inesperado: ${e.toString()}');
     }
   }

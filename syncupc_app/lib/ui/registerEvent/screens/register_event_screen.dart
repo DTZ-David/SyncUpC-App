@@ -3,6 +3,7 @@ import 'package:syncupc/features/registerEvent/controllers/register_event_contro
 import 'package:syncupc/utils/loading_screens/loading_screen.dart';
 import 'package:syncupc/utils/popup_utils.dart';
 import '../../../features/auth/models/register_state.dart';
+import '../../../features/home/providers/event_providers.dart';
 import '../widgets/register_event_exports.dart';
 import '../widgets/register_event_form_builder.dart';
 import '../widgets/register_event_service.dart';
@@ -189,6 +190,8 @@ class _RegisterEventScreenState extends ConsumerState<RegisterEventScreen> {
     );
 
     ref.read(registerEventControllerProvider.notifier).resetSuccess();
+    ref.invalidate(getAllEventsForUProvider);
+    ref.invalidate(getAllEventsProvider);
 
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted) {

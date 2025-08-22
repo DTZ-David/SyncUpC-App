@@ -48,13 +48,22 @@ class ForumScreen extends ConsumerWidget {
                     return const Center(
                         child: Text('No hay temas en el foro.'));
                   }
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: topics.length,
-                    itemBuilder: (context, index) {
-                      final topic = topics[index];
-                      return _buildForumTopic(context, ref, topic);
+
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      // Fuerza recarga del provider
+                      ref.invalidate(getalltopicsforeventProvider(eventId));
                     },
+                    child: ListView.builder(
+                      physics:
+                          const AlwaysScrollableScrollPhysics(), // Asegura que siempre se pueda hacer pull even si no hay scroll
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: topics.length,
+                      itemBuilder: (context, index) {
+                        final topic = topics[index];
+                        return _buildForumTopic(context, ref, topic);
+                      },
+                    ),
                   );
                 },
               ),
