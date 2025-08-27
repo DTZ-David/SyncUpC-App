@@ -88,6 +88,12 @@ class RegisterProfileNotificationsPreferencesScreen extends ConsumerWidget {
 
                     if (success) {
                       context.go('/login');
+                      PopupUtils.showSuccess(
+                        context,
+                        message: "Genial!",
+                        subtitle:
+                            'Ya tienes una cuenta, por favor inicia sesion',
+                      );
                     } else {
                       final error =
                           ref.read(registerControllerProvider).errorMessage ??

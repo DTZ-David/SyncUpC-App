@@ -25,7 +25,7 @@ class MainNavigationWrapper extends ConsumerWidget {
       );
     }
 
-    final isAuthorized = user.role == 'Student';
+    final isAuthorized = user.role == 'StaffMember';
 
     return Stack(
       children: [

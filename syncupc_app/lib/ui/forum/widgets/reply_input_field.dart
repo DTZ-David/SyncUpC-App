@@ -7,14 +7,33 @@ import '../../../design_system/atoms/text_field.dart';
 import '../../../features/auth/providers/auth_providers.dart';
 import '../../../utils/popup_utils.dart';
 
-class ReplyInputField extends ConsumerWidget {
+class ReplyInputField extends ConsumerStatefulWidget {
   final String forumId;
   const ReplyInputField(this.forumId, {super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ReplyInputField> createState() => _ReplyInputFieldState();
+}
+
+class _ReplyInputFieldState extends ConsumerState<ReplyInputField> {
+  late final TextEditingController contentController;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    contentController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    contentController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
-    final contentController = TextEditingController();
 
     return Container(
       color: AppColors.white,
@@ -33,7 +52,9 @@ class ReplyInputField extends ConsumerWidget {
           const SizedBox(width: 12),
           Expanded(
             child: AppTextField(
-                hintText: "Deja tu comentario", controller: contentController),
+              hintText: "Deja tu comentario",
+              controller: contentController,
+            ),
           ),
           const SizedBox(width: 8),
           Container(
@@ -42,30 +63,64 @@ class ReplyInputField extends ConsumerWidget {
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: const Icon(Icons.send, color: AppColors.white, size: 20),
-              onPressed: () async {
-                final content = contentController.text.trim();
+              icon: isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AppColors.white),
+                      ),
+                    )
+                  : const Icon(Icons.send, color: AppColors.white, size: 20),
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      final content = contentController.text.trim();
+                      if (content.isEmpty) return;
 
-                final request =
-                    CommentRequest(forumId: forumId, content: content);
+                      setState(() {
+                        isLoading = true;
+                      });
 
-                try {
-                  await ref.read(addcommentProvider(request).future);
-                  ref.invalidate(getalltopicsforeventProvider);
-                  PopupUtils.showSuccess(
-                    context,
-                    message: 'Ya mandamos tu comentario!',
-                    duration: const Duration(seconds: 2),
-                  );
-                } catch (e) {
-                  PopupUtils.showError(
-                    context,
-                    message: e.toString(),
-                    subtitle: 'Intenta mas tarde',
-                    duration: const Duration(seconds: 2),
-                  );
-                }
-              },
+                      final request = CommentRequest(
+                          forumId: widget.forumId, content: content);
+
+                      try {
+                        await ref.read(addcommentProvider(request).future);
+
+                        contentController.clear();
+
+                        // Invalidar AMBOS providers para actualizar tanto la lista como el detalle
+                        ref.invalidate(getalltopicsforeventProvider);
+                        ref.invalidate(getForumByIdProvider(
+                            widget.forumId)); // ESTE ES EL IMPORTANTE
+
+                        if (mounted) {
+                          PopupUtils.showSuccess(
+                            context,
+                            message: 'Ya mandamos tu comentario!',
+                            duration: const Duration(seconds: 2),
+                          );
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          PopupUtils.showError(
+                            context,
+                            message: e.toString(),
+                            subtitle: 'Intenta mas tarde',
+                            duration: const Duration(seconds: 2),
+                          );
+                        }
+                      } finally {
+                        if (mounted) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                        }
+                      }
+                    },
             ),
           ),
         ],

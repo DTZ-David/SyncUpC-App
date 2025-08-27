@@ -422,5 +422,135 @@ class _AddcommentProviderElement extends AutoDisposeFutureProviderElement<void>
   @override
   CommentRequest get request => (origin as AddcommentProvider).request;
 }
+
+String _$getForumByIdHash() => r'41349ff5d15b819ea85d05434fa150b247d6351d';
+
+/// See also [getForumById].
+@ProviderFor(getForumById)
+const getForumByIdProvider = GetForumByIdFamily();
+
+/// See also [getForumById].
+class GetForumByIdFamily extends Family<AsyncValue<ForumModel>> {
+  /// See also [getForumById].
+  const GetForumByIdFamily();
+
+  /// See also [getForumById].
+  GetForumByIdProvider call(
+    String forumId,
+  ) {
+    return GetForumByIdProvider(
+      forumId,
+    );
+  }
+
+  @override
+  GetForumByIdProvider getProviderOverride(
+    covariant GetForumByIdProvider provider,
+  ) {
+    return call(
+      provider.forumId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'getForumByIdProvider';
+}
+
+/// See also [getForumById].
+class GetForumByIdProvider extends AutoDisposeFutureProvider<ForumModel> {
+  /// See also [getForumById].
+  GetForumByIdProvider(
+    String forumId,
+  ) : this._internal(
+          (ref) => getForumById(
+            ref as GetForumByIdRef,
+            forumId,
+          ),
+          from: getForumByIdProvider,
+          name: r'getForumByIdProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$getForumByIdHash,
+          dependencies: GetForumByIdFamily._dependencies,
+          allTransitiveDependencies:
+              GetForumByIdFamily._allTransitiveDependencies,
+          forumId: forumId,
+        );
+
+  GetForumByIdProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.forumId,
+  }) : super.internal();
+
+  final String forumId;
+
+  @override
+  Override overrideWith(
+    FutureOr<ForumModel> Function(GetForumByIdRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: GetForumByIdProvider._internal(
+        (ref) => create(ref as GetForumByIdRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        forumId: forumId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<ForumModel> createElement() {
+    return _GetForumByIdProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is GetForumByIdProvider && other.forumId == forumId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, forumId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin GetForumByIdRef on AutoDisposeFutureProviderRef<ForumModel> {
+  /// The parameter `forumId` of this provider.
+  String get forumId;
+}
+
+class _GetForumByIdProviderElement
+    extends AutoDisposeFutureProviderElement<ForumModel> with GetForumByIdRef {
+  _GetForumByIdProviderElement(super.provider);
+
+  @override
+  String get forumId => (origin as GetForumByIdProvider).forumId;
+}
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

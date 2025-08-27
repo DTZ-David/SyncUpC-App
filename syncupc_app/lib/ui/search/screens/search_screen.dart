@@ -69,17 +69,16 @@ class SearchScreen extends ConsumerWidget {
                     childAspectRatio: 112 / 133,
                     children: eventList.take(6).map((event) {
                       return EventsCard(
-                        onTap: () {
-                          context.push(
-                            '/event/details',
-                            extra: event,
-                          );
-                        },
-                        title: event.eventTitle,
-                        imagePath: event.imageUrls.isNotEmpty
-                            ? event.imageUrls.first
-                            : 'assets/images/event_card2.png',
-                      );
+                          onTap: () {
+                            context.push(
+                              '/event/details',
+                              extra: event,
+                            );
+                          },
+                          title: event.eventTitle,
+                          imagePath: event.imageUrls.isNotEmpty
+                              ? event.imageUrls.first
+                              : null);
                     }).toList(),
                   );
                 },

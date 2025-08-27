@@ -44,17 +44,37 @@ class EventCard extends StatelessWidget {
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12),
                 ),
-                child: Image.network(
-                  imageUrl!,
-                  height: 140,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    height: 120,
-                    color: Colors.grey[300],
-                    child: Icon(Icons.image_not_supported),
-                  ),
-                ),
+                child: imageUrl == null || imageUrl!.isEmpty
+                    ? Container(
+                        height: 140,
+                        width: double.infinity,
+                        color: Colors.grey[100],
+                        child: Center(
+                          child: SvgPicture.asset(
+                            'assets/images/logo.svg',
+                            height: 60,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      )
+                    : Image.network(
+                        imageUrl!,
+                        height: 140,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 140,
+                          width: double.infinity,
+                          color: Colors.grey[100],
+                          child: Center(
+                            child: SvgPicture.asset(
+                              'assets/images/logo.svg',
+                              height: 60,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 2),
@@ -75,20 +95,23 @@ class EventCard extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/images/location.svg',
-                        width: 8,
-                        height: 8,
+                child: Row(
+                  children: [
+                    SvgPicture.asset(
+                      'assets/images/location.svg',
+                      width: 8,
+                      height: 8,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      // <- Esto limita el ancho del texto
+                      child: AppText.semiBold(
+                        location,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis, // <- agrega "..."
                       ),
-                      const SizedBox(width: 4),
-                      AppText.semiBold(location),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: 4),

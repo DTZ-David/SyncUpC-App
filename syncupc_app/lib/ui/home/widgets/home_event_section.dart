@@ -23,13 +23,6 @@ class HomeEventsSection extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AppText.feed(title),
-            AppText("Ver más",
-                style: TextStyle(
-                  color: AppColors.primary200,
-                  fontFamily: 'Nunito',
-                  decoration: TextDecoration.underline,
-                  decorationColor: AppColors.primary200,
-                )),
           ],
         ),
         SizedBox(
@@ -57,7 +50,7 @@ class HomeEventsSection extends ConsumerWidget {
                     time: capitalizeFirstLetter(
                         DateFormat('EEEE, d \'de\' MMMM', 'es')
                             .format(event.eventStartDate)),
-                    location: event.eventLocation,
+                    location: event.address,
                     attendeesText: 'Participantes', // Puedes mejorar esto
                     totalAttendees: event.participantProfilePictures.length,
                     imageUrl:

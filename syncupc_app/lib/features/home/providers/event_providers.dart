@@ -38,3 +38,63 @@ List<String> eventTags(Ref ref) {
     orElse: () => [],
   );
 }
+
+final selectedTagProvider = StateProvider<String?>((ref) => null);
+
+// Provider para el texto de búsqueda
+final searchQueryProvider = StateProvider<String>((ref) => '');
+
+// Provider para eventos filtrados por búsqueda Y categoría
+@riverpod
+Future<List<EventModel>> filteredEventsForU(Ref ref) async {
+  final events = await ref.watch(getAllEventsForUProvider.future);
+  final selectedTag = ref.watch(selectedTagProvider);
+  final searchQuery = ref.watch(searchQueryProvider).toLowerCase().trim();
+
+  var filteredEvents = events;
+
+  // Filtrar por categoría si hay una seleccionada
+  if (selectedTag != null) {
+    filteredEvents = filteredEvents
+        .where((event) => event.tags.contains(selectedTag))
+        .toList();
+  }
+
+  // Filtrar por búsqueda si hay texto
+  if (searchQuery.isNotEmpty) {
+    filteredEvents = filteredEvents.where((event) {
+      return event.eventTitle.toLowerCase().contains(searchQuery) ||
+          event.eventObjective.toLowerCase().contains(searchQuery) ||
+          event.tags.any((tag) => tag.toLowerCase().contains(searchQuery));
+    }).toList();
+  }
+
+  return filteredEvents;
+}
+
+@riverpod
+Future<List<EventModel>> filteredEventsNearby(Ref ref) async {
+  final events = await ref.watch(getAllEventsProvider.future);
+  final selectedTag = ref.watch(selectedTagProvider);
+  final searchQuery = ref.watch(searchQueryProvider).toLowerCase().trim();
+
+  var filteredEvents = events;
+
+  // Filtrar por categoría si hay una seleccionada
+  if (selectedTag != null) {
+    filteredEvents = filteredEvents
+        .where((event) => event.tags.contains(selectedTag))
+        .toList();
+  }
+
+  // Filtrar por búsqueda si hay texto
+  if (searchQuery.isNotEmpty) {
+    filteredEvents = filteredEvents.where((event) {
+      return event.eventTitle.toLowerCase().contains(searchQuery) ||
+          event.eventObjective.toLowerCase().contains(searchQuery) ||
+          event.tags.any((tag) => tag.toLowerCase().contains(searchQuery));
+    }).toList();
+  }
+
+  return filteredEvents;
+}

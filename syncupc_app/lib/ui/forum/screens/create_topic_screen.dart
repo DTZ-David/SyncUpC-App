@@ -50,45 +50,44 @@ class _CreateTopicScreenState extends ConsumerState<CreateTopicScreen> {
                     ContentFieldSection(controller: _contentController),
                     const SizedBox(height: 20),
                     PrimaryButton(
-                      text: "Crear Tópico",
-                      variant: ButtonVariant.filled,
-                      onPressed: () async {
-                        if (!_formKey.currentState!.validate()) return;
-
-                        final title = _titleController.text.trim();
-                        final content = _contentController.text.trim();
-                        final eventId = widget.eventId;
-                        final request = ForumRequest(
-                          eventId: eventId,
-                          title: title,
-                          content: content,
-                        );
-
-                        try {
-                          await ref
-                              .read(registerForumTopicProvider(request).future);
-                          ref.invalidate(getalltopicsforeventProvider);
-                          if (mounted) {
-                            PopupUtils.showSuccess(
+                        text: "Crear Tópico",
+                        variant: ButtonVariant.filled,
+                        onPressed: () async {
+                          if (!_formKey.currentState!.validate()) return;
+                          final title = _titleController.text.trim();
+                          final content = _contentController.text.trim();
+                          final eventId = widget.eventId;
+                          final request = ForumRequest(
+                            eventId: eventId,
+                            title: title,
+                            content: content,
+                          );
+                          try {
+                            await ref.read(
+                                registerForumTopicProvider(request).future);
+                            ref.invalidate(getalltopicsforeventProvider);
+                            if (!mounted) return;
+                            // Mostrar popup y esperar a que desaparezca
+                            await PopupUtils.showSuccess(
                               context,
-                              message: 'Topico creado exitosamente!',
+                              message: 'Tópico creado exitosamente!',
                               subtitle: 'Tu evento ha sido actualizado',
                               duration: const Duration(seconds: 2),
                             );
+                            if (!mounted) return;
+                            // Volver a la pantalla anterior solo después de que desaparezca el popup
+                            context.pop();
+                          } catch (e) {
+                            if (mounted) {
+                              await PopupUtils.showError(
+                                context,
+                                message: e.toString(),
+                                subtitle: 'Intenta más tarde',
+                                duration: const Duration(seconds: 2),
+                              );
+                            }
                           }
-                          context.pop();
-                        } catch (e) {
-                          if (mounted) {
-                            PopupUtils.showError(
-                              context,
-                              message: e.toString(),
-                              subtitle: 'Intenta mas tarde',
-                              duration: const Duration(seconds: 2),
-                            );
-                          }
-                        }
-                      },
-                    ),
+                        }),
                   ],
                 ),
               ),

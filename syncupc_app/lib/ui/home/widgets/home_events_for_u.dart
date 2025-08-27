@@ -25,15 +25,6 @@ class HomeEventsNearby extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AppText.feed(title),
-            AppText(
-              "Ver más",
-              style: TextStyle(
-                color: AppColors.primary200,
-                fontFamily: 'Nunito',
-                decoration: TextDecoration.underline,
-                decorationColor: AppColors.primary200,
-              ),
-            ),
           ],
         ),
         const SizedBox(height: 12),

@@ -55,5 +55,44 @@ final eventTagsProvider = AutoDisposeProvider<List<String>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef EventTagsRef = AutoDisposeProviderRef<List<String>>;
+String _$filteredEventsForUHash() =>
+    r'55fc7da3b5ec39daee6a05c52ef2a4ef768fec25';
+
+/// See also [filteredEventsForU].
+@ProviderFor(filteredEventsForU)
+final filteredEventsForUProvider =
+    AutoDisposeFutureProvider<List<EventModel>>.internal(
+  filteredEventsForU,
+  name: r'filteredEventsForUProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$filteredEventsForUHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef FilteredEventsForURef = AutoDisposeFutureProviderRef<List<EventModel>>;
+String _$filteredEventsNearbyHash() =>
+    r'b8ae3b7f66ac86d24d589e8e1b9d3febfdaf19bf';
+
+/// See also [filteredEventsNearby].
+@ProviderFor(filteredEventsNearby)
+final filteredEventsNearbyProvider =
+    AutoDisposeFutureProvider<List<EventModel>>.internal(
+  filteredEventsNearby,
+  name: r'filteredEventsNearbyProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$filteredEventsNearbyHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef FilteredEventsNearbyRef
+    = AutoDisposeFutureProviderRef<List<EventModel>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

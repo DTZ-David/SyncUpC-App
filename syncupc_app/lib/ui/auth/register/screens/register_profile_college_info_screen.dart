@@ -7,8 +7,37 @@ import '../../../../design_system/molecules/drop_down.dart';
 import '../../../../design_system/models/dropdown_item.dart';
 import '../../../../features/auth/providers/career_provider.dart';
 
-class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
+class RegisterProfileCollegeInfoScreen extends ConsumerStatefulWidget {
   const RegisterProfileCollegeInfoScreen({super.key});
+
+  @override
+  ConsumerState<RegisterProfileCollegeInfoScreen> createState() =>
+      _RegisterProfileCollegeInfoScreenState();
+}
+
+class _RegisterProfileCollegeInfoScreenState
+    extends ConsumerState<RegisterProfileCollegeInfoScreen> {
+  late final TextEditingController phoneController;
+
+  @override
+  void initState() {
+    super.initState();
+    phoneController = TextEditingController();
+
+    // Si ya hay un número guardado en el estado, lo cargamos
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final formState = ref.read(registerFormProvider);
+      if (formState.phoneNumber.isNotEmpty) {
+        phoneController.text = formState.phoneNumber;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    phoneController.dispose();
+    super.dispose();
+  }
 
   int getCurrentStep(BuildContext context) {
     final uri = GoRouterState.of(context).uri.toString();
@@ -18,8 +47,7 @@ class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final phoneController = TextEditingController();
+  Widget build(BuildContext context) {
     final currentStep = getCurrentStep(context);
     final careersAsync = ref.watch(getAllCareersProvider);
 
@@ -59,6 +87,10 @@ class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
                 AppTextField(
                   controller: phoneController,
                   labelText: "Escribe aquí tu número de telefono",
+                  onChanged: (value) {
+                    // Actualizamos el estado en tiempo real
+                    formNotifier.setPhoneNumber(value.trim());
+                  },
                 ),
                 const SizedBox(height: 24),
 
@@ -103,10 +135,7 @@ class RegisterProfileCollegeInfoScreen extends ConsumerWidget {
                       text: "Siguiente",
                       variant: ButtonVariant.filled,
                       onPressed: () {
-                        formNotifier.setPhoneNumber(
-                          phoneController.text.trim(),
-                        );
-
+                        // Ya no necesitamos setear aquí porque se actualiza en tiempo real
                         context.push('/register/step/3');
                       },
                     ),

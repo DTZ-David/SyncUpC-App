@@ -27,11 +27,8 @@ class MainPostCard extends StatelessWidget {
           PostContent(forumModel: forumModel),
           const SizedBox(height: 16),
           PostActions(
-            likes: 12,
-            comments: 34,
-            onLike: () {},
+            comments: forumModel.comments.length,
             onComment: () {},
-            onShare: () {},
           ),
         ],
       ),

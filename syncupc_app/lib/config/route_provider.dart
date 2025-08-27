@@ -1,5 +1,4 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:syncupc/features/forum/models/forum_model.dart';
 import 'package:syncupc/ui/bookmark/screens/bookmark_screen.dart';
 import 'package:syncupc/ui/forum/screens/forum_post_screen.dart';
 import 'package:syncupc/ui/forum/screens/forum_screen.dart';
@@ -124,8 +123,9 @@ GoRouter appRouter(Ref ref) {
         path: '/event/forum/forumPostDetails',
         name: 'event-forum-id',
         builder: (context, state) {
-          final forum = state.extra as ForumModel;
-          return ForumPostScreen(forum: forum);
+          final forumId = state.extra
+              as String; // Ahora recibe String en lugar de ForumModel
+          return ForumPostScreen(forumId: forumId);
         },
       ),
       GoRoute(

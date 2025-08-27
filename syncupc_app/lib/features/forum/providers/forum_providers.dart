@@ -26,3 +26,9 @@ Future<void> addcomment(Ref ref, CommentRequest request) async {
   final token = ref.read(authTokenProvider);
   return await ForumService().addComment(token!, request);
 }
+
+@riverpod
+Future<ForumModel> getForumById(Ref ref, String forumId) async {
+  final token = ref.read(authTokenProvider);
+  return await ForumService().getForumById(token!, forumId);
+}

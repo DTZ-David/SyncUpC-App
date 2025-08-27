@@ -78,7 +78,7 @@ class ForumScreen extends ConsumerWidget {
       BuildContext context, WidgetRef ref, ForumModel topic) {
     return GestureDetector(
       onTap: () {
-        context.push('/event/forum/forumPostDetails', extra: topic);
+        context.push('/event/forum/forumPostDetails', extra: topic.id);
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),

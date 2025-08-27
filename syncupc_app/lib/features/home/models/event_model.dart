@@ -7,6 +7,7 @@ class EventModel {
   final DateTime eventStartDate;
   final DateTime eventEndDate;
   final String eventLocation;
+  final String address;
   final bool targetTeachers;
   final bool targetStudents;
   final bool targetAdministrative;
@@ -26,6 +27,7 @@ class EventModel {
       required this.eventStartDate,
       required this.eventEndDate,
       required this.eventLocation,
+      required this.address,
       required this.targetTeachers,
       required this.targetStudents,
       required this.targetAdministrative,
@@ -44,6 +46,7 @@ class EventModel {
       eventStartDate: _parseFlexibleDate(json['eventStartDate']), // <- aquí
       eventEndDate: _parseFlexibleDate(json['eventEndDate']), // <- aquí
       eventLocation: json['eventLocation'] ?? '',
+      address: json['address'] ?? '',
       targetTeachers: json['targetTeachers'] ?? false,
       targetStudents: json['targetStudents'] ?? false,
       targetAdministrative: json['targetAdministrative'] ?? false,
@@ -66,6 +69,7 @@ class EventModel {
       'eventStartDate': eventStartDate.toIso8601String(),
       'eventEndDate': eventEndDate.toIso8601String(),
       'eventLocation': eventLocation,
+      'address': address,
       'targetTeachers': targetTeachers,
       'targetStudents': targetStudents,
       'targetAdministrative': targetAdministrative,

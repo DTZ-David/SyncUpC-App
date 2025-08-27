@@ -9,6 +9,7 @@ class HomeCategories extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tags = ref.watch(eventTagsProvider);
+    final selectedTag = ref.watch(selectedTagProvider);
 
     return Column(
       children: [
@@ -16,13 +17,6 @@ class HomeCategories extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const AppText.feed("Categorías"),
-            AppText("Ver más",
-                style: TextStyle(
-                  color: AppColors.primary200,
-                  fontFamily: 'Nunito',
-                  decoration: TextDecoration.underline,
-                  decorationColor: AppColors.primary200,
-                )),
           ],
         ),
         const SizedBox(height: 12),
@@ -33,8 +27,9 @@ class HomeCategories extends ConsumerWidget {
               : ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    _buildCategory("Todas"),
-                    ...tags.map((tag) => _buildCategory(tag)),
+                    _buildCategory("Todas", selectedTag == null, ref),
+                    ...tags.map(
+                        (tag) => _buildCategory(tag, selectedTag == tag, ref)),
                   ],
                 ),
         ),
@@ -42,16 +37,47 @@ class HomeCategories extends ConsumerWidget {
     );
   }
 
-  Widget _buildCategory(String label) {
+  Widget _buildCategory(String label, bool isSelected, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
-      child: Chip(
-        label: AppText.caption(label),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: const BorderSide(color: AppColors.neutral400, width: 0.5),
+      child: GestureDetector(
+        onTap: () {
+          // Cambiar la categoría seleccionada
+          if (label == "Todas") {
+            ref.read(selectedTagProvider.notifier).state = null;
+          } else {
+            // Si ya está seleccionado, deseleccionar (opcional)
+            if (isSelected) {
+              ref.read(selectedTagProvider.notifier).state = null;
+            } else {
+              ref.read(selectedTagProvider.notifier).state = label;
+            }
+          }
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          child: Chip(
+            label: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppText.caption(
+                  label,
+                  color: isSelected ? Colors.white : AppColors.neutral700,
+                ),
+                const SizedBox(width: 4),
+              ],
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: BorderSide(
+                color: isSelected ? AppColors.primary500 : AppColors.neutral400,
+                width: isSelected ? 1.5 : 0.5,
+              ),
+            ),
+            backgroundColor: isSelected ? AppColors.neutral500 : Colors.white,
+            elevation: isSelected ? 2 : 0,
+          ),
         ),
-        backgroundColor: Colors.white,
       ),
     );
   }
