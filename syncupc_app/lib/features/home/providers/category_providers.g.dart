@@ -1,26 +1,28 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'login_controller.dart';
+part of 'category_providers.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$loginControllerHash() => r'3ebc80dd077b6b7a88a770af7167cdcc0fa9c440';
+String _$getAllCategoriesHash() => r'219e49018825949d0b78cc8db9a4f7af56f8c6cc';
 
-/// See also [LoginController].
-@ProviderFor(LoginController)
-final loginControllerProvider =
-    NotifierProvider<LoginController, AuthState>.internal(
-  LoginController.new,
-  name: r'loginControllerProvider',
+/// See also [getAllCategories].
+@ProviderFor(getAllCategories)
+final getAllCategoriesProvider =
+    FutureProvider<List<EventCategoryRequest>>.internal(
+  getAllCategories,
+  name: r'getAllCategoriesProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$loginControllerHash,
+      : _$getAllCategoriesHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$LoginController = Notifier<AuthState>;
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef GetAllCategoriesRef = FutureProviderRef<List<EventCategoryRequest>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

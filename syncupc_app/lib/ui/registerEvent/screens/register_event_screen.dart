@@ -20,8 +20,6 @@ class RegisterEventScreen extends ConsumerStatefulWidget {
 class _RegisterEventScreenState extends ConsumerState<RegisterEventScreen> {
   // Controllers y estado del formulario
   final _titleController = TextEditingController();
-  final _locationController = TextEditingController();
-  final _addressController = TextEditingController();
   final _linkController = TextEditingController();
   final _descriptionController = TextEditingController();
 
@@ -38,6 +36,14 @@ class _RegisterEventScreenState extends ConsumerState<RegisterEventScreen> {
   bool _allowGraduates = false;
   bool _allowGeneralPublic = false;
 
+  // Nuevos campos para los dropdowns
+  String? _selectedCampusId;
+  String? _selectedSpaceId;
+  List<String> _selectedEventTypes = [];
+  List<String> _selectedEventCategories = [];
+  int? _maxCapacity;
+  bool _isPublic = true;
+
   late final RegisterEventFormBuilder _formBuilder;
   late final RegisterEventValidator _validator;
   late final RegisterEventService _service;
@@ -53,8 +59,6 @@ class _RegisterEventScreenState extends ConsumerState<RegisterEventScreen> {
   @override
   void dispose() {
     _titleController.dispose();
-    _locationController.dispose();
-    _addressController.dispose();
     _linkController.dispose();
     _descriptionController.dispose();
     super.dispose();
@@ -73,8 +77,6 @@ class _RegisterEventScreenState extends ConsumerState<RegisterEventScreen> {
             children: _formBuilder.buildFormSections(
               context: context,
               titleController: _titleController,
-              locationController: _locationController,
-              addressController: _addressController,
               linkController: _linkController,
               descriptionController: _descriptionController,
               selectedImage: _selectedImage,
@@ -88,6 +90,13 @@ class _RegisterEventScreenState extends ConsumerState<RegisterEventScreen> {
               allowStudents: _allowStudents,
               allowGraduates: _allowGraduates,
               allowGeneralPublic: _allowGeneralPublic,
+              // Nuevos parámetros
+              selectedCampusId: _selectedCampusId,
+              selectedSpaceId: _selectedSpaceId,
+              selectedEventTypes: _selectedEventTypes,
+              selectedEventCategories: _selectedEventCategories,
+              maxCapacity: _maxCapacity,
+              isPublic: _isPublic,
               permissions: permissions,
               onImageSelected: (image) =>
                   setState(() => _selectedImage = image),
@@ -107,6 +116,19 @@ class _RegisterEventScreenState extends ConsumerState<RegisterEventScreen> {
                   setState(() => _allowGraduates = value),
               onGeneralPublicChanged: (value) =>
                   setState(() => _allowGeneralPublic = value),
+              // Nuevos callbacks
+              onCampusChanged: (campusId) =>
+                  setState(() => _selectedCampusId = campusId),
+              onSpaceChanged: (spaceId) =>
+                  setState(() => _selectedSpaceId = spaceId),
+              onEventTypesChanged: (types) =>
+                  setState(() => _selectedEventTypes = types),
+              onEventCategoriesChanged: (categories) =>
+                  setState(() => _selectedEventCategories = categories),
+              onMaxCapacityChanged: (capacity) =>
+                  setState(() => _maxCapacity = capacity),
+              onIsPublicChanged: (isPublic) =>
+                  setState(() => _isPublic = isPublic),
               onCreateEvent: _createEvent,
               ref: ref,
             ),
@@ -157,14 +179,17 @@ class _RegisterEventScreenState extends ConsumerState<RegisterEventScreen> {
       allowGeneralPublic: _allowGeneralPublic,
       isVirtual: _isVirtual,
       linkController: _linkController,
+      // Nuevas validaciones
+      selectedCampusId: _selectedCampusId,
+      selectedSpaceId: _selectedSpaceId,
+      selectedEventTypes: _selectedEventTypes,
+      selectedEventCategories: _selectedEventCategories,
     )) return;
 
     await _service.createEvent(
       context: context,
       ref: ref,
       titleController: _titleController,
-      locationController: _locationController,
-      addressController: _addressController,
       linkController: _linkController,
       descriptionController: _descriptionController,
       selectedImage: _selectedImage,
@@ -178,6 +203,13 @@ class _RegisterEventScreenState extends ConsumerState<RegisterEventScreen> {
       allowStudents: _allowStudents,
       allowGraduates: _allowGraduates,
       allowGeneralPublic: _allowGeneralPublic,
+      // Nuevos parámetros
+      selectedCampusId: _selectedCampusId!,
+      selectedSpaceId: _selectedSpaceId!,
+      selectedEventTypes: _selectedEventTypes,
+      selectedEventCategories: _selectedEventCategories,
+      maxCapacity: _maxCapacity,
+      isPublic: _isPublic,
     );
   }
 

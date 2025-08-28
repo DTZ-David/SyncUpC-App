@@ -6,47 +6,55 @@ class EventModel {
   final String eventObjective;
   final DateTime eventStartDate;
   final DateTime eventEndDate;
-  final String eventLocation;
-  final String address;
+
+  final CampusModel campus;
+  final SpaceModel space;
+
   final bool targetTeachers;
   final bool targetStudents;
   final bool targetAdministrative;
   final bool targetGeneral;
+
   final String additionalDetails;
   final List<String> imageUrls;
   final List<String> participantProfilePictures;
-  final List<String> tags;
+
+  final List<CategoryModel> categories;
+  final List<EventTypeModel> eventTypes;
+
   final bool isSaved;
   final String status;
 
-  EventModel(
-      {required this.isSaved,
-      required this.id,
-      required this.eventTitle,
-      required this.eventObjective,
-      required this.eventStartDate,
-      required this.eventEndDate,
-      required this.eventLocation,
-      required this.address,
-      required this.targetTeachers,
-      required this.targetStudents,
-      required this.targetAdministrative,
-      required this.targetGeneral,
-      required this.additionalDetails,
-      required this.imageUrls,
-      required this.tags,
-      required this.participantProfilePictures,
-      required this.status});
+  EventModel({
+    required this.id,
+    required this.eventTitle,
+    required this.eventObjective,
+    required this.eventStartDate,
+    required this.eventEndDate,
+    required this.campus,
+    required this.space,
+    required this.targetTeachers,
+    required this.targetStudents,
+    required this.targetAdministrative,
+    required this.targetGeneral,
+    required this.additionalDetails,
+    required this.imageUrls,
+    required this.participantProfilePictures,
+    required this.categories,
+    required this.eventTypes,
+    required this.isSaved,
+    required this.status,
+  });
 
   factory EventModel.fromJson(Map<String, dynamic> json) {
     return EventModel(
       id: json['id'] ?? '',
       eventTitle: json['eventTitle'] ?? '',
       eventObjective: json['eventObjective'] ?? '',
-      eventStartDate: _parseFlexibleDate(json['eventStartDate']), // <- aquí
-      eventEndDate: _parseFlexibleDate(json['eventEndDate']), // <- aquí
-      eventLocation: json['eventLocation'] ?? '',
-      address: json['address'] ?? '',
+      eventStartDate: _parseFlexibleDate(json['eventStartDate']),
+      eventEndDate: _parseFlexibleDate(json['eventEndDate']),
+      campus: CampusModel.fromJson(json['campus'] ?? {}),
+      space: SpaceModel.fromJson(json['space'] ?? {}),
       targetTeachers: json['targetTeachers'] ?? false,
       targetStudents: json['targetStudents'] ?? false,
       targetAdministrative: json['targetAdministrative'] ?? false,
@@ -55,8 +63,13 @@ class EventModel {
       imageUrls: List<String>.from(json['imageUrls'] ?? []),
       participantProfilePictures:
           List<String>.from(json['participantProfilePictures'] ?? []),
-      tags: List<String>.from(json['tags'] ?? []),
-      isSaved: json['isSaved'] ?? '',
+      categories: (json['categories'] as List? ?? [])
+          .map((e) => CategoryModel.fromJson(e))
+          .toList(),
+      eventTypes: (json['eventTypes'] as List? ?? [])
+          .map((e) => EventTypeModel.fromJson(e))
+          .toList(),
+      isSaved: json['isSaved'] ?? false,
       status: json['status'] ?? 'Created',
     );
   }
@@ -68,8 +81,8 @@ class EventModel {
       'eventObjective': eventObjective,
       'eventStartDate': eventStartDate.toIso8601String(),
       'eventEndDate': eventEndDate.toIso8601String(),
-      'eventLocation': eventLocation,
-      'address': address,
+      'campus': campus.toJson(),
+      'space': space.toJson(),
       'targetTeachers': targetTeachers,
       'targetStudents': targetStudents,
       'targetAdministrative': targetAdministrative,
@@ -77,9 +90,10 @@ class EventModel {
       'additionalDetails': additionalDetails,
       'imageUrls': imageUrls,
       'participantProfilePictures': participantProfilePictures,
-      'tags': tags,
+      'categories': categories.map((e) => e.toJson()).toList(),
+      'eventTypes': eventTypes.map((e) => e.toJson()).toList(),
       'isSaved': isSaved,
-      'status': status
+      'status': status,
     };
   }
 
@@ -87,8 +101,67 @@ class EventModel {
     try {
       return DateTime.parse(raw); // ISO 8601
     } catch (_) {
-      // Formato real: dd/MM/yyyy HH:mm:ss
       return DateFormat("dd/MM/yyyy HH:mm:ss").parse(raw);
     }
   }
+}
+
+/// Campus
+class CampusModel {
+  final String name;
+
+  CampusModel({required this.name});
+
+  factory CampusModel.fromJson(Map<String, dynamic> json) {
+    return CampusModel(name: json['name'] ?? '');
+  }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+      };
+}
+
+/// Space
+class SpaceModel {
+  final String name;
+
+  SpaceModel({required this.name});
+
+  factory SpaceModel.fromJson(Map<String, dynamic> json) {
+    return SpaceModel(name: json['name'] ?? '');
+  }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+      };
+}
+
+/// Category
+class CategoryModel {
+  final String name;
+
+  CategoryModel({required this.name});
+
+  factory CategoryModel.fromJson(Map<String, dynamic> json) {
+    return CategoryModel(name: json['name'] ?? '');
+  }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+      };
+}
+
+/// EventType
+class EventTypeModel {
+  final String name;
+
+  EventTypeModel({required this.name});
+
+  factory EventTypeModel.fromJson(Map<String, dynamic> json) {
+    return EventTypeModel(name: json['name'] ?? '');
+  }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+      };
 }

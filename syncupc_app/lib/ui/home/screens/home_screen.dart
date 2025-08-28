@@ -38,9 +38,6 @@ class HomeScreen extends ConsumerWidget {
                 ref.invalidate(getAllEventsForUProvider);
                 ref.invalidate(getAllEventsProvider);
                 ref.invalidate(currentUserProvider);
-                // Opcional: limpiar filtros al hacer refresh
-                // ref.read(selectedTagProvider.notifier).state = null;
-                // ref.read(searchQueryProvider.notifier).state = '';
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),

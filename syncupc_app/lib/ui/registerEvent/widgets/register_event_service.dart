@@ -9,10 +9,8 @@ class RegisterEventService {
     required BuildContext context,
     required WidgetRef ref,
     required TextEditingController titleController,
-    required TextEditingController locationController,
-    required TextEditingController addressController,
-    required TextEditingController linkController,
     required TextEditingController descriptionController,
+    required TextEditingController linkController,
     required File? selectedImage,
     required List<String> selectedCareers,
     required DateTime selectedDate,
@@ -24,6 +22,14 @@ class RegisterEventService {
     required bool allowStudents,
     required bool allowGraduates,
     required bool allowGeneralPublic,
+    // Nuevos parámetros requeridos
+    required String selectedCampusId,
+    required String selectedSpaceId,
+    required List<String> selectedEventTypes,
+    required List<String> selectedEventCategories,
+    // Parámetros opcionales
+    int? maxCapacity,
+    bool isPublic = true,
   }) async {
     final startDateTime = _combineDateAndTime(selectedDate, startTime);
     final endDateTime = _combineDateAndTime(selectedDate, endTime);
@@ -35,15 +41,34 @@ class RegisterEventService {
       return;
     }
 
+    // Validaciones adicionales para los nuevos campos
+    if (selectedCampusId.isEmpty) {
+      _showError(context, 'Debe seleccionar un campus');
+      return;
+    }
+
+    if (selectedSpaceId.isEmpty) {
+      _showError(context, 'Debe seleccionar un espacio');
+      return;
+    }
+
+    if (selectedEventTypes.isEmpty) {
+      _showError(context, 'Debe seleccionar al menos un tipo de evento');
+      return;
+    }
+
+    if (selectedEventCategories.isEmpty) {
+      _showError(context, 'Debe seleccionar al menos una categoría');
+      return;
+    }
+
     final imageUrls = await _uploadEventImage(context, selectedImage);
     if (imageUrls == null) return; // Error ya mostrado en _uploadEventImage
 
     final eventRequest = _buildEventRequest(
       titleController,
-      locationController,
-      addressController,
-      linkController,
       descriptionController,
+      linkController,
       selectedCareers,
       startDateTime,
       endDateTime,
@@ -53,7 +78,13 @@ class RegisterEventService {
       allowStudents,
       allowGraduates,
       allowGeneralPublic,
+      selectedCampusId,
+      selectedSpaceId,
+      selectedEventTypes,
+      selectedEventCategories,
       imageUrls,
+      maxCapacity ?? 0,
+      isPublic,
     );
 
     final controller = ref.read(registerEventControllerProvider.notifier);
@@ -113,10 +144,8 @@ class RegisterEventService {
 
   EventRequest _buildEventRequest(
     TextEditingController titleController,
-    TextEditingController locationController,
-    TextEditingController addressController,
-    TextEditingController linkController,
     TextEditingController descriptionController,
+    TextEditingController linkController,
     List<String> selectedCareers,
     DateTime startDateTime,
     DateTime endDateTime,
@@ -126,17 +155,21 @@ class RegisterEventService {
     bool allowStudents,
     bool allowGraduates,
     bool allowGeneralPublic,
+    String selectedCampusId,
+    String selectedSpaceId,
+    List<String> selectedEventTypes,
+    List<String> selectedEventCategories,
     List<String> imageUrls,
+    int maxCapacity,
+    bool isPublic,
   ) {
     return EventRequest(
       eventTitle: titleController.text.trim(),
       eventObjective: descriptionController.text.trim(),
-      eventLocation: locationController.text.trim(),
-      address: addressController.text.trim(),
+      campusId: selectedCampusId,
+      spaceId: selectedSpaceId,
       startDate: startDateTime,
       endDate: endDateTime,
-      registrationStart: startDateTime,
-      registrationEnd: endDateTime,
       careerIds: selectedCareers,
       targetTeachers: allowProfessors,
       targetStudents: allowStudents,
@@ -146,10 +179,11 @@ class RegisterEventService {
       meetingUrl: linkController.text.trim().isEmpty
           ? null
           : linkController.text.trim(),
-      maxCapacity: 0,
+      maxCapacity: maxCapacity,
       requiresRegistration: requiresRegistration,
-      isPublic: true,
-      tags: [],
+      isPublic: isPublic,
+      eventTypesId: selectedEventTypes,
+      eventCategoryId: selectedEventCategories,
       imageUrls: imageUrls,
       additionalDetails: null,
     );

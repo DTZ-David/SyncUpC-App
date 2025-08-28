@@ -2,7 +2,8 @@ import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing_for_provider.dart';
 import 'package:syncupc/ui/settings/widgets/settings_option.dart';
 
-import '../../../features/auth/services/user_storage_service.dart';
+import '../../../features/auth/controllers/login_controller.dart';
+import '../../../utils/popup_utils.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -72,8 +73,28 @@ class SettingsScreen extends ConsumerWidget {
               icon: "assets/images/logout.svg",
               title: 'Cerrar Sesión',
               onTap: () async {
-                final userStorage = UserStorageService();
-                await userStorage.clearUser();
+                final shouldLogout = await PopupUtils.showConfirmation(
+                  context,
+                  message: 'Cerrar Sesión',
+                  subtitle: '¿Estás seguro de que quieres cerrar sesión?',
+                  confirmText: 'Cerrar Sesión',
+                  cancelText: 'Cancelar',
+                );
+
+                if (shouldLogout == true) {
+                  await ref.read(loginControllerProvider.notifier).logout();
+
+                  if (context.mounted) {
+                    await PopupUtils.showSuccess(
+                      context,
+                      message: 'Sesión cerrada exitosamente',
+                      duration: const Duration(seconds: 1),
+                      onDismiss: () {
+                        context.go('/welcome');
+                      },
+                    );
+                  }
+                }
               },
             ),
             const SizedBox(height: 20),

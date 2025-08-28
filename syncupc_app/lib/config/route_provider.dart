@@ -10,6 +10,7 @@ import 'package:syncupc/ui/search/screens/search_screen.dart';
 import 'package:syncupc/ui/settings/screens/edit_profile_screen.dart';
 import 'package:syncupc/ui/settings/screens/history_screen.dart';
 import 'package:syncupc/ui/settings/screens/settings_screen.dart';
+import '../features/auth/controllers/login_controller.dart';
 import '../features/home/models/event_model.dart';
 import '../ui/forum/screens/create_topic_screen.dart';
 import './exports/routing_for_provider.dart';
@@ -22,8 +23,44 @@ part 'route_provider.g.dart';
 GoRouter appRouter(Ref ref) {
   return GoRouter(
     initialLocation: '/splash',
+    redirect: (context, state) {
+      final authState = ref.read(loginControllerProvider);
+      final currentPath = state.uri.path;
+
+      print('🔥🔥🔥 REDIRECT - currentPath: $currentPath');
+      print('🔥🔥🔥 REDIRECT - isAuthenticated: ${authState.isAuthenticated}');
+
+      // 🔥 Si el usuario está autenticado y trata de ir a rutas de auth, redirigir al home
+      if (authState.isAuthenticated) {
+        if (currentPath == '/splash' ||
+            currentPath == '/welcome' ||
+            currentPath == '/login' ||
+            currentPath == '/registerEmail' ||
+            currentPath == '/registerPassword' ||
+            currentPath.startsWith('/register/step/')) {
+          // MÁS ESPECÍFICO
+          print('🔥🔥🔥 REDIRECT - Redirigiendo a / desde auth route');
+          return '/';
+        }
+      }
+
+      // 🔥 Si no está autenticado y trata de ir a rutas protegidas, redirigir al splash
+      if (!authState.isAuthenticated) {
+        if (currentPath == '/' ||
+            currentPath == '/search' ||
+            currentPath == '/bookmarks' ||
+            currentPath == '/settings') {
+          print(
+              '🔥🔥🔥 REDIRECT - Redirigiendo a /splash desde ruta protegida');
+          return '/splash';
+        }
+      }
+
+      print('🔥🔥🔥 REDIRECT - Resultado: null (sin redirección)');
+      return null; // No redirect needed
+    },
     routes: [
-      // Mueve splash aquí
+      // Rutas de autenticación (fuera del ShellRoute)
       GoRoute(
         path: '/splash',
         builder: (context, state) => const AnimatedSplashScreen(),
@@ -67,33 +104,15 @@ GoRouter appRouter(Ref ref) {
           }
         },
       ),
-      // Mantén el ShellRoute para el layout principal
-      ShellRoute(
-        builder: (context, state, child) {
-          return MainNavigationWrapper(child: child);
+
+      // RUTAS INDEPENDIENTES (sin bottom navigation) - ANTES DEL SHELLROUTE
+      GoRoute(
+        path: '/register_event',
+        name: 'registerEvent',
+        builder: (context, state) {
+          print('🔥🔥🔥 CONSTRUYENDO RegisterEventScreen');
+          return const RegisterEventScreen();
         },
-        routes: [
-          GoRoute(
-            path: '/',
-            name: 'home',
-            builder: (context, state) => const HomeScreen(),
-          ),
-          GoRoute(
-            path: '/search',
-            name: 'search',
-            builder: (context, state) => const SearchScreen(),
-          ),
-          GoRoute(
-            path: '/bookmarks',
-            name: 'bookmarks',
-            builder: (context, state) => const BookmarkScreen(),
-          ),
-          GoRoute(
-            path: '/settings',
-            name: 'settings',
-            builder: (context, state) => const SettingsScreen(),
-          ),
-        ],
       ),
       GoRoute(
         path: '/event/details',
@@ -123,8 +142,7 @@ GoRouter appRouter(Ref ref) {
         path: '/event/forum/forumPostDetails',
         name: 'event-forum-id',
         builder: (context, state) {
-          final forumId = state.extra
-              as String; // Ahora recibe String en lugar de ForumModel
+          final forumId = state.extra as String;
           return ForumPostScreen(forumId: forumId);
         },
       ),
@@ -141,20 +159,45 @@ GoRouter appRouter(Ref ref) {
         name: 'scanner',
         builder: (context, state) => const ScannerScreen(),
       ),
-      GoRoute(
-        path: '/register_event',
-        name: 'registerEvent',
-        builder: (context, state) => const RegisterEventScreen(),
-      ),
-      GoRoute(
-        path: '/edit_profile',
-        name: 'editProfile',
-        builder: (context, state) => const EditProfileScreen(),
-      ),
-      GoRoute(
-        path: '/history',
-        name: 'history',
-        builder: (context, state) => const HistoryScreen(),
+
+      // ShellRoute para el layout principal con bottom navigation
+      ShellRoute(
+        builder: (context, state, child) {
+          return MainNavigationWrapper(child: child);
+        },
+        routes: [
+          // Rutas principales con bottom navigation
+          GoRoute(
+            path: '/',
+            name: 'home',
+            builder: (context, state) => const HomeScreen(),
+          ),
+          GoRoute(
+            path: '/search',
+            name: 'search',
+            builder: (context, state) => const SearchScreen(),
+          ),
+          GoRoute(
+            path: '/bookmarks',
+            name: 'bookmarks',
+            builder: (context, state) => const BookmarkScreen(),
+          ),
+          GoRoute(
+            path: '/settings',
+            name: 'settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: '/edit_profile',
+            name: 'editProfile',
+            builder: (context, state) => const EditProfileScreen(),
+          ),
+          GoRoute(
+            path: '/history',
+            name: 'history',
+            builder: (context, state) => const HistoryScreen(),
+          ),
+        ],
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

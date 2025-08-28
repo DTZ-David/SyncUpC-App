@@ -39,24 +39,8 @@ final getAllEventsProvider = FutureProvider<List<EventModel>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef GetAllEventsRef = FutureProviderRef<List<EventModel>>;
-String _$eventTagsHash() => r'4f70588b8f16578c0e3b22d4f14d79da0baa8b0f';
-
-/// See also [eventTags].
-@ProviderFor(eventTags)
-final eventTagsProvider = AutoDisposeProvider<List<String>>.internal(
-  eventTags,
-  name: r'eventTagsProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$eventTagsHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef EventTagsRef = AutoDisposeProviderRef<List<String>>;
 String _$filteredEventsForUHash() =>
-    r'55fc7da3b5ec39daee6a05c52ef2a4ef768fec25';
+    r'9bf0d51d7eef1effc2017765b7957e72dc50ea66';
 
 /// See also [filteredEventsForU].
 @ProviderFor(filteredEventsForU)
@@ -75,7 +59,7 @@ final filteredEventsForUProvider =
 // ignore: unused_element
 typedef FilteredEventsForURef = AutoDisposeFutureProviderRef<List<EventModel>>;
 String _$filteredEventsNearbyHash() =>
-    r'b8ae3b7f66ac86d24d589e8e1b9d3febfdaf19bf';
+    r'd68950f65ec12ea547addbe886b9ae989ea533c7';
 
 /// See also [filteredEventsNearby].
 @ProviderFor(filteredEventsNearby)

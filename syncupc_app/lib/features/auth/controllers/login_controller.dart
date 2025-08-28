@@ -1,8 +1,12 @@
+// ignore_for_file: avoid_print
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:syncupc/features/auth/models/auth_state.dart';
 import 'package:syncupc/features/auth/models/user.dart';
 import 'package:syncupc/features/auth/services/login_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../services/user_storage_service.dart';
 
 part 'login_controller.g.dart';
 
@@ -26,12 +30,23 @@ class LoginController extends _$LoginController {
     try {
       final response = await _authService.login(username, password);
       final user = User.fromJson(response);
+
+      // Usar UserStorageService para guardar todos los datos
+      final storageService = UserStorageService();
+
+      // Guardar el usuario completo
+      await storageService.saveUser(user);
+
+      // Guardar datos individuales (manteniendo tu lógica actual)
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', user.token);
-      await prefs.setString('refreshToken', user.refreshToken);
-      await prefs.setString('name', user.name);
-      await prefs.setString('profilePicture', user.photo);
-      await prefs.setString('role', user.role);
+      await Future.wait([
+        prefs.setString('token', user.token),
+        prefs.setString('refreshToken', user.refreshToken),
+        prefs.setString('name', user.name),
+        prefs.setString('profilePicture', user.photo),
+        prefs.setString('role', user.role),
+      ]);
+
       state = state.copyWith(
         user: user,
         isLoading: false,
@@ -49,69 +64,94 @@ class LoginController extends _$LoginController {
   }
 
   Future<bool> loadUserFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final refreshToken = prefs.getString('refreshToken');
-    final name = prefs.getString('name');
-    final photo = prefs.getString('profilePicture');
-    final role = prefs.getString('role');
-
-    // 🔒 Verificamos que haya datos mínimos para construir el User
-    if (refreshToken == null || name == null || photo == null || role == null) {
-      return false;
-    }
-
     try {
-      // 🔄 Llamada al backend para refrescar token
-      final data = await _authService.refreshAccessToken(refreshToken);
+      // 🔥 Usar UserStorageService primero
+      final storageService = UserStorageService();
+      final user = await storageService.getUser();
+
+      if (user == null || user.refreshToken.isEmpty) {
+        print('🔒 No hay usuario guardado o falta refresh token');
+        return false;
+      }
+
+      // 🔄 Intentar refrescar el token
+      final data = await _authService.refreshAccessToken(user.refreshToken);
 
       final newToken = data['accessToken'];
       final newRefreshToken = data['refreshToken'];
 
-      // Guardamos los nuevos tokens
-      await prefs.setString('token', newToken);
-      await prefs.setString('refreshToken', newRefreshToken);
-
-      final user = User(
+      // Crear usuario actualizado
+      final updatedUser = User(
         token: newToken,
         refreshToken: newRefreshToken,
-        name: name,
-        photo: photo,
-        role: role,
+        name: user.name,
+        photo: user.photo,
+        role: user.role,
       );
 
+      // 🔥 Guardar el usuario actualizado usando AMBOS métodos para consistencia
+      await storageService.saveUser(updatedUser);
+
+      final prefs = await SharedPreferences.getInstance();
+      await Future.wait([
+        prefs.setString('token', newToken),
+        prefs.setString('refreshToken', newRefreshToken),
+        prefs.setString('name', user.name),
+        prefs.setString('profilePicture', user.photo),
+        prefs.setString('role', user.role),
+      ]);
+
+      // Actualizar estado
       state = state.copyWith(
-        user: user,
+        user: updatedUser,
         isAuthenticated: true,
       );
 
-      return true; // 👈 Éxito
+      print('🔐 Usuario cargado exitosamente: ${user.name}');
+      return true;
     } catch (e) {
-      // Si algo falla, hacemos logout silencioso
-      await prefs.clear(); // opcional
+      print('❌ Error al cargar usuario: $e');
+      // Si falla, limpiar todo
+      final storageService = UserStorageService();
+      await storageService.clearAllUserData();
+
       state = state.copyWith(
         user: null,
         isAuthenticated: false,
       );
 
-      return false; // 👈 Fallo
+      return false;
     }
   }
 
   Future<void> logout() async {
-    state = state.copyWith(isLoading: true);
-
     try {
-      await _authService.logout();
+      state = state.copyWith(isLoading: true);
 
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('token');
-      await prefs.remove('refreshToken');
+      // Opcional: Llamar al endpoint de logout del backend
+      // await _authService.logout();
 
-      state = AuthState(); // Reset
-    } catch (e) {
+      // Limpiar TODOS los datos almacenados
+      final storageService = UserStorageService();
+      await storageService.clearAllUserData();
+
+      // Actualizar el estado
       state = state.copyWith(
+        user: null,
+        isAuthenticated: false,
         isLoading: false,
-        errorMessage: 'Error al cerrar sesión',
+        errorMessage: null,
+      );
+    } catch (e) {
+      // Aún así limpiamos los datos locales aunque falle algo
+      final storageService = UserStorageService();
+      await storageService.clearAllUserData();
+
+      state = state.copyWith(
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        errorMessage: 'Error al cerrar sesión: ${e.toString()}',
       );
     }
   }

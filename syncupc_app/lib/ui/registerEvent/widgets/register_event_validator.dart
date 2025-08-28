@@ -16,47 +16,89 @@ class RegisterEventValidator {
     required bool allowGeneralPublic,
     required bool isVirtual,
     required TextEditingController linkController,
+    // Nuevos parámetros
+    required String? selectedCampusId,
+    required String? selectedSpaceId,
+    required List<String> selectedEventTypes,
+    required List<String> selectedEventCategories,
   }) {
+    // Validación del título
     if (titleController.text.trim().isEmpty) {
-      PopupUtils.showError(
-        context,
-        message: 'El título del evento es obligatorio',
-        subtitle: 'Por favor ingresa un título para tu evento',
-        duration: const Duration(seconds: 2),
-      );
+      _showError(context, 'El título del evento es obligatorio');
       return false;
     }
 
-    if (descriptionController.text.trim().isEmpty) {
-      _showError(context, 'La descripción del evento es obligatoria');
+    // Validación de campus
+    if (selectedCampusId == null || selectedCampusId.isEmpty) {
+      _showError(context, 'Debe seleccionar un campus');
       return false;
     }
 
-    if (selectedDate == null) {
-      _showError(context, 'Selecciona la fecha del evento');
+    // Validación de espacio
+    if (selectedSpaceId == null || selectedSpaceId.isEmpty) {
+      _showError(context, 'Debe seleccionar un espacio');
       return false;
     }
 
-    if (startTime == null || endTime == null) {
-      _showError(context, 'Selecciona la hora de inicio y fin del evento');
+    // Validación de tipos de evento
+    if (selectedEventTypes.isEmpty) {
+      _showError(context, 'Debe seleccionar al menos un tipo de evento');
       return false;
     }
 
+    // Validación de categorías
+    if (selectedEventCategories.isEmpty) {
+      _showError(context, 'Debe seleccionar al menos una categoría');
+      return false;
+    }
+
+    // Validación de carreras
     if (selectedCareers.isEmpty) {
-      _showError(context, 'Selecciona al menos una carrera');
+      _showError(context, 'Debe seleccionar al menos una carrera');
       return false;
     }
 
+    // Validación de audiencia
     if (!allowProfessors &&
         !allowStudents &&
         !allowGraduates &&
         !allowGeneralPublic) {
-      _showError(context, 'Selecciona al menos un tipo de público');
+      _showError(context, 'Debe seleccionar al menos un tipo de audiencia');
       return false;
     }
 
+    // Validación de fecha
+    if (selectedDate == null) {
+      _showError(context, 'Debe seleccionar una fecha para el evento');
+      return false;
+    }
+
+    // Validación de horarios
+    if (startTime == null || endTime == null) {
+      _showError(context, 'Debe seleccionar hora de inicio y fin');
+      return false;
+    }
+
+    // Validación de fecha futura
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final eventDate =
+        DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+
+    if (eventDate.isBefore(today)) {
+      _showError(context, 'La fecha del evento no puede ser en el pasado');
+      return false;
+    }
+
+    // Validación de link para eventos virtuales
     if (isVirtual && linkController.text.trim().isEmpty) {
-      _showError(context, 'El enlace es obligatorio para eventos virtuales');
+      _showError(context, 'Debe proporcionar un enlace para eventos virtuales');
+      return false;
+    }
+
+    // Validación de descripción
+    if (descriptionController.text.trim().isEmpty) {
+      _showError(context, 'La descripción del evento es obligatoria');
       return false;
     }
 

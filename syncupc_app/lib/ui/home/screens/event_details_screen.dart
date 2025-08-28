@@ -5,7 +5,7 @@ import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/molecules/attendees_avatars.dart';
 import 'package:syncupc/ui/home/widgets/confirmation_message.dart';
 import 'package:syncupc/utils/popup_utils.dart';
-import '../../../features/bookmarks/providers/bookmarks_providers.dart';
+import '../../../features/bookmarks/providers/bookmarks_state_providers.dart'; // Tu nuevo provider
 import '../../../features/home/models/event_model.dart';
 import '../widgets/expandable_title.dart';
 
@@ -13,8 +13,16 @@ class EventDetailsScreen extends ConsumerWidget {
   final EventModel event;
 
   const EventDetailsScreen(this.event, {super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Inicializar el estado de bookmarks con el evento actual si está guardado
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (event.isSaved) {
+        ref.read(bookmarksStateProvider.notifier).addBookmark(event.id);
+      }
+    });
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.primary200,
@@ -58,25 +66,19 @@ class EventDetailsScreen extends ConsumerWidget {
               ),
               Column(
                 children: [
-                  // Contenedor principal del encabezado del evento
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Título expandible
                         ExpandableTitle(
                           title: event.eventTitle,
                           maxLines: 2,
                         ),
-
                         const SizedBox(height: 16),
-
-                        // Información de asistentes y botones en una sola fila
                         Row(
                           children: [
-                            // Avatares y contador de asistentes
                             AttendeesAvatars(
                               avatars: event.participantProfilePictures,
                               totalAttendees:
@@ -91,8 +93,6 @@ class EventDetailsScreen extends ConsumerWidget {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-
-                            // Botones de acción
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -108,33 +108,7 @@ class EventDetailsScreen extends ConsumerWidget {
                                   },
                                 ),
                                 const SizedBox(width: 8),
-                                _circleIconButton(
-                                  icon: 'assets/images/bookmark_01.svg',
-                                  color: event.isSaved
-                                      ? AppColors.primary200
-                                      : AppColors.neutral400,
-                                  onTap: () async {
-                                    try {
-                                      await ref.read(
-                                          addEventFavProvider(event.id).future);
-                                      PopupUtils.showSuccess(
-                                        context,
-                                        message:
-                                            '¡Evento guardado exitosamente!',
-                                        subtitle:
-                                            'Tu evento ha sido actualizado',
-                                        duration: const Duration(seconds: 2),
-                                      );
-                                    } catch (e) {
-                                      PopupUtils.showError(
-                                        context,
-                                        message: e.toString(),
-                                        subtitle: 'Por favor intenta de nuevo',
-                                        duration: const Duration(seconds: 2),
-                                      );
-                                    }
-                                  },
-                                ),
+                                _buildBookmarkButton(context, ref),
                               ],
                             ),
                           ],
@@ -142,17 +116,12 @@ class EventDetailsScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
-
-                  // Separador visual
                   Container(
                     height: 1,
                     color: Colors.grey.shade200,
                     margin: const EdgeInsets.symmetric(horizontal: 16),
                   ),
-
                   const SizedBox(height: 8),
-
-                  // Resto del contenido (información del evento, etc.)
                   const _SectionTitle("Información del evento"),
                   _EventDetailRow(
                     icon: 'assets/images/calendar.svg',
@@ -186,14 +155,10 @@ class EventDetailsScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AppText.body3(event.address),
-                              AppText.body3(event.eventLocation),
+                              AppText.body3(event.space.name),
+                              AppText.body3(event.campus.name),
                             ],
                           ),
-                        ),
-                        AppText.body3(
-                          "¿Cómo llegar?",
-                          color: AppColors.primary200,
                         ),
                       ],
                     ),
@@ -205,9 +170,7 @@ class EventDetailsScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AppText.body1(
-                          event.eventObjective,
-                        ),
+                        AppText.body1(event.eventObjective),
                         const SizedBox(height: 8),
                         AppText.body2(
                           event.additionalDetails,
@@ -223,6 +186,87 @@ class EventDetailsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildBookmarkButton(BuildContext context, WidgetRef ref) {
+    final isBookmarked = ref.watch(bookmarksStateProvider).contains(event.id);
+    final bookmarkToggleAsync = ref.watch(bookmarkToggleProvider(event.id));
+
+    return GestureDetector(
+      onTap: bookmarkToggleAsync.isLoading
+          ? null
+          : () => _handleBookmarkTap(context, ref),
+      child: Container(
+        height: 40,
+        width: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Center(
+          child: bookmarkToggleAsync.isLoading
+              ? SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      isBookmarked
+                          ? AppColors.primary200
+                          : AppColors.neutral400,
+                    ),
+                  ),
+                )
+              : SvgPicture.asset(
+                  'assets/images/bookmark_01.svg',
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.scaleDown,
+                  colorFilter: ColorFilter.mode(
+                    isBookmarked ? AppColors.primary200 : AppColors.neutral400,
+                    BlendMode.srcIn,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  void _handleBookmarkTap(BuildContext context, WidgetRef ref) async {
+    final bookmarkToggle = ref.read(bookmarkToggleProvider(event.id).notifier);
+    final isCurrentlyBookmarked =
+        ref.read(bookmarksStateProvider).contains(event.id);
+
+    try {
+      await bookmarkToggle.toggle();
+
+      if (context.mounted) {
+        if (!isCurrentlyBookmarked) {
+          PopupUtils.showSuccess(
+            context,
+            message: '¡Evento guardado exitosamente!',
+            subtitle: 'Tu evento ha sido agregado a favoritos',
+            duration: const Duration(seconds: 2),
+          );
+        } else {
+          PopupUtils.showSuccess(
+            context,
+            message: '¡Evento removido de favoritos!',
+            subtitle: 'El evento ya no está en tus favoritos',
+            duration: const Duration(seconds: 2),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        PopupUtils.showError(
+          context,
+          message: 'Error al actualizar favoritos',
+          subtitle: 'Por favor intenta de nuevo',
+          duration: const Duration(seconds: 2),
+        );
+      }
+    }
   }
 }
 

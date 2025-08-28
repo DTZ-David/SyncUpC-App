@@ -1,12 +1,12 @@
 import 'package:syncupc/features/registerEvent/controllers/register_event_controller.dart';
 import '../widgets/register_event_exports.dart';
+import 'event_location_selector.dart';
+import 'event_type_selector.dart';
 
 class RegisterEventFormBuilder {
   List<Widget> buildFormSections({
     required BuildContext context,
     required TextEditingController titleController,
-    required TextEditingController locationController,
-    required TextEditingController addressController,
     required TextEditingController linkController,
     required TextEditingController descriptionController,
     required File? selectedImage,
@@ -20,6 +20,13 @@ class RegisterEventFormBuilder {
     required bool allowStudents,
     required bool allowGraduates,
     required bool allowGeneralPublic,
+    // Nuevos parámetros
+    required String? selectedCampusId,
+    required String? selectedSpaceId,
+    required List<String> selectedEventTypes,
+    required List<String> selectedEventCategories,
+    required int? maxCapacity,
+    required bool isPublic,
     required dynamic permissions,
     required Function(File?) onImageSelected,
     required Function(List<String>) onCareersChanged,
@@ -32,16 +39,27 @@ class RegisterEventFormBuilder {
     required Function(bool) onStudentsChanged,
     required Function(bool) onGraduatesChanged,
     required Function(bool) onGeneralPublicChanged,
+    // Nuevos callbacks
+    required Function(String?) onCampusChanged,
+    required Function(String?) onSpaceChanged,
+    required Function(List<String>) onEventTypesChanged,
+    required Function(List<String>) onEventCategoriesChanged,
+    required Function(int?) onMaxCapacityChanged,
+    required Function(bool) onIsPublicChanged,
     required VoidCallback onCreateEvent,
     required WidgetRef ref,
   }) {
     return [
       _buildHeader(),
       _buildEventImagePicker(selectedImage, onImageSelected),
+      _buildLocationSelector(
+        selectedCampusId,
+        selectedSpaceId,
+        onCampusChanged,
+        onSpaceChanged,
+      ),
       _buildBasicInfoForm(
         titleController,
-        locationController,
-        addressController,
         linkController,
         descriptionController,
         selectedCareers,
@@ -50,6 +68,16 @@ class RegisterEventFormBuilder {
         onVirtualChanged,
         requiresRegistration,
         onRegistrationChanged,
+        maxCapacity,
+        onMaxCapacityChanged,
+        isPublic,
+        onIsPublicChanged,
+      ),
+      _buildEventTypeSelector(
+        selectedEventTypes,
+        selectedEventCategories,
+        onEventTypesChanged,
+        onEventCategoriesChanged,
       ),
       _buildAudienceSelector(
         allowProfessors,
@@ -91,10 +119,22 @@ class RegisterEventFormBuilder {
     );
   }
 
+  Widget _buildLocationSelector(
+    String? selectedCampusId,
+    String? selectedSpaceId,
+    Function(String?) onCampusChanged,
+    Function(String?) onSpaceChanged,
+  ) {
+    return EventLocationSelector(
+      selectedCampusId: selectedCampusId,
+      selectedSpaceId: selectedSpaceId,
+      onCampusChanged: onCampusChanged,
+      onSpaceChanged: onSpaceChanged,
+    );
+  }
+
   Widget _buildBasicInfoForm(
     TextEditingController titleController,
-    TextEditingController locationController,
-    TextEditingController addressController,
     TextEditingController linkController,
     TextEditingController descriptionController,
     List<String> selectedCareers,
@@ -103,11 +143,13 @@ class RegisterEventFormBuilder {
     Function(bool) onVirtualChanged,
     bool requiresRegistration,
     Function(bool) onRegistrationChanged,
+    int? maxCapacity,
+    Function(int?) onMaxCapacityChanged,
+    bool isPublic,
+    Function(bool) onIsPublicChanged,
   ) {
     return EventBasicInfoForm(
       titleController: titleController,
-      locationController: locationController,
-      addressController: addressController,
       linkController: linkController,
       descriptionController: descriptionController,
       selectedCareers: selectedCareers,
@@ -116,6 +158,24 @@ class RegisterEventFormBuilder {
       onVirtualChanged: onVirtualChanged,
       requiresRegistration: requiresRegistration,
       onRegistrationChanged: onRegistrationChanged,
+      maxCapacity: maxCapacity,
+      onMaxCapacityChanged: onMaxCapacityChanged,
+      isPublic: isPublic,
+      onIsPublicChanged: onIsPublicChanged,
+    );
+  }
+
+  Widget _buildEventTypeSelector(
+    List<String> selectedEventTypes,
+    List<String> selectedEventCategories,
+    Function(List<String>) onEventTypesChanged,
+    Function(List<String>) onEventCategoriesChanged,
+  ) {
+    return EventTypeSelector(
+      selectedEventTypes: selectedEventTypes,
+      selectedEventCategories: selectedEventCategories,
+      onEventTypesChanged: onEventTypesChanged,
+      onEventCategoriesChanged: onEventCategoriesChanged,
     );
   }
 

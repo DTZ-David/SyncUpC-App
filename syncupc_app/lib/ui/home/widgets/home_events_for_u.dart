@@ -54,7 +54,7 @@ class HomeEventsNearby extends StatelessWidget {
                     .format(event.eventStartDate)
                     .toLowerCase(), // Ej: 4:03pm
                 isNearby: true,
-                location: event.eventLocation,
+                location: event.campus.name,
                 attendeesText: 'Participantes',
                 totalAttendees: event.participantProfilePictures.length,
                 attendeeAvatars: event.participantProfilePictures,

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:syncupc/design_system/protons/colors.dart';
 import '../features/auth/providers/auth_providers.dart';
 import '../ui/home/widgets/confirm_scan_dialog.dart';
+import '../ui/registerEvent/screens/register_event_screen.dart';
 import '../utils/bottom_navigation.dart';
 
 class MainNavigationWrapper extends ConsumerWidget {
@@ -47,8 +48,15 @@ class MainNavigationWrapper extends ConsumerWidget {
                   ),
                   child: FloatingActionButton(
                     backgroundColor: AppColors.white,
-                    onPressed: () {
-                      context.push('/register_event');
+                    onPressed: () async {
+                      print('🔥 FloatingActionButton presionado');
+                      try {
+                        print('🔥 Intentando navegar con GoRouter');
+                        await context.push('/register_event');
+                        print('🔥 Navegación completada');
+                      } catch (e) {
+                        print('🔥 Error con GoRouter: $e');
+                      }
                     },
                     shape: const CircleBorder(),
                     elevation: 0,
@@ -82,6 +90,7 @@ class MainNavigationWrapper extends ConsumerWidget {
                   onCancel: () => Navigator.of(context).pop(),
                   onContinue: () {
                     Navigator.of(context).pop();
+                    // Mantener push para scanner ya que está fuera del ShellRoute
                     context.push('/scanner');
                   },
                 ),

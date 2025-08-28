@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -86,14 +88,26 @@ class _AnimatedSplashScreenState extends ConsumerState<AnimatedSplashScreen>
 
     if (!mounted) return;
 
-    final isAuth =
-        await ref.read(loginControllerProvider.notifier).loadUserFromPrefs();
+    print('🚀 Iniciando verificación de autenticación...');
 
-    if (!mounted) return;
+    try {
+      final isAuth =
+          await ref.read(loginControllerProvider.notifier).loadUserFromPrefs();
 
-    if (isAuth) {
-      context.go('/'); // o tu ruta principal
-    } else {
+      if (!mounted) return;
+
+      print('🚀 Resultado de autenticación: $isAuth');
+
+      if (isAuth) {
+        print('🏠 Navegando al home');
+        context.go('/');
+      } else {
+        print('👋 Navegando a welcome');
+        context.go('/welcome');
+      }
+    } catch (e) {
+      print('❌ Error en splash: $e');
+      if (!mounted) return;
       context.go('/welcome');
     }
   }

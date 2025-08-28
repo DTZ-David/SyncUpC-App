@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
@@ -16,6 +18,12 @@ class LoginScreen extends ConsumerWidget {
     final authState = ref.watch(loginControllerProvider);
 
     ref.listen(loginControllerProvider, (previous, current) {
+      print(
+          '🔍 LoginScreen - Estado anterior: isAuth=${previous?.isAuthenticated}, isLoading=${previous?.isLoading}');
+      print(
+          '🔍 LoginScreen - Estado actual: isAuth=${current.isAuthenticated}, isLoading=${current.isLoading}');
+      print('🔍 LoginScreen - Error: ${current.errorMessage}');
+
       if (current.errorMessage != null &&
           current.errorMessage != previous?.errorMessage &&
           !current.isLoading) {
@@ -30,8 +38,13 @@ class LoginScreen extends ConsumerWidget {
         });
       }
 
+      // 🔥 Cambiar la navegación directa por una más robusta
       if (current.isAuthenticated &&
-          current.isAuthenticated != previous?.isAuthenticated) {
+          current.isAuthenticated != previous?.isAuthenticated &&
+          !current.isLoading) {
+        print('🚀 LoginScreen - Usuario autenticado, navegando al home...');
+
+        // 🔥 Navegación directa - mounted no existe en ConsumerWidget
         context.go('/');
       }
     });

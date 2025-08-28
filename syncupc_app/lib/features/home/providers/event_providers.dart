@@ -21,30 +21,11 @@ Future<List<EventModel>> getAllEvents(Ref ref) async {
   return await EventService().getAllEvents(token!);
 }
 
-@riverpod
-List<String> eventTags(Ref ref) {
-  final eventsAsync = ref.watch(getAllEventsProvider);
-
-  return eventsAsync.maybeWhen(
-    data: (events) {
-      final tagsSet = <String>{};
-
-      for (final event in events) {
-        tagsSet.addAll(event.tags);
-      }
-
-      return tagsSet.toList();
-    },
-    orElse: () => [],
-  );
-}
-
 final selectedTagProvider = StateProvider<String?>((ref) => null);
 
 // Provider para el texto de búsqueda
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
-// Provider para eventos filtrados por búsqueda Y categoría
 @riverpod
 Future<List<EventModel>> filteredEventsForU(Ref ref) async {
   final events = await ref.watch(getAllEventsForUProvider.future);
@@ -53,19 +34,23 @@ Future<List<EventModel>> filteredEventsForU(Ref ref) async {
 
   var filteredEvents = events;
 
-  // Filtrar por categoría si hay una seleccionada
+  // Filtrar por categoría seleccionada
   if (selectedTag != null) {
-    filteredEvents = filteredEvents
-        .where((event) => event.tags.contains(selectedTag))
-        .toList();
+    filteredEvents = filteredEvents.where((event) {
+      final categoryNames = event.categories.map((c) => c.name).toList();
+      return categoryNames.contains(selectedTag);
+    }).toList();
   }
 
   // Filtrar por búsqueda si hay texto
   if (searchQuery.isNotEmpty) {
     filteredEvents = filteredEvents.where((event) {
+      final categoryNames =
+          event.categories.map((c) => c.name.toLowerCase()).toList();
+
       return event.eventTitle.toLowerCase().contains(searchQuery) ||
           event.eventObjective.toLowerCase().contains(searchQuery) ||
-          event.tags.any((tag) => tag.toLowerCase().contains(searchQuery));
+          categoryNames.any((c) => c.contains(searchQuery));
     }).toList();
   }
 
@@ -83,16 +68,19 @@ Future<List<EventModel>> filteredEventsNearby(Ref ref) async {
   // Filtrar por categoría si hay una seleccionada
   if (selectedTag != null) {
     filteredEvents = filteredEvents
-        .where((event) => event.tags.contains(selectedTag))
+        .where((event) => event.categories.contains(selectedTag))
         .toList();
   }
 
   // Filtrar por búsqueda si hay texto
   if (searchQuery.isNotEmpty) {
     filteredEvents = filteredEvents.where((event) {
+      final categoryNames =
+          event.categories.map((c) => c.name.toLowerCase()).toList();
+
       return event.eventTitle.toLowerCase().contains(searchQuery) ||
           event.eventObjective.toLowerCase().contains(searchQuery) ||
-          event.tags.any((tag) => tag.toLowerCase().contains(searchQuery));
+          categoryNames.any((c) => c.contains(searchQuery));
     }).toList();
   }
 

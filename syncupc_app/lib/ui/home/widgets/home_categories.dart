@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/features/home/providers/event_providers.dart';
 
+import '../../../features/home/providers/category_providers.dart';
+
 class HomeCategories extends ConsumerWidget {
   const HomeCategories({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tags = ref.watch(eventTagsProvider);
+    final categories = ref.watch(getAllCategoriesProvider);
     final selectedTag = ref.watch(selectedTagProvider);
 
     return Column(
@@ -22,17 +24,24 @@ class HomeCategories extends ConsumerWidget {
         const SizedBox(height: 12),
         SizedBox(
           height: 36,
-          child: tags.isEmpty
-              ? const Center(child: CircularProgressIndicator())
-              : ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    _buildCategory("Todas", selectedTag == null, ref),
-                    ...tags.map(
-                        (tag) => _buildCategory(tag, selectedTag == tag, ref)),
-                  ],
+          child: categories.when(
+            data: (list) => ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                _buildCategory("Todas", selectedTag == null, ref),
+                ...list.map(
+                  (category) => _buildCategory(
+                    category.name,
+                    selectedTag == category.name,
+                    ref,
+                  ),
                 ),
-        ),
+              ],
+            ),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Text('Error: $e'),
+          ),
+        )
       ],
     );
   }

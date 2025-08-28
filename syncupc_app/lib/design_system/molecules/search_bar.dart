@@ -5,6 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/features/home/providers/event_providers.dart';
 
+import '../../features/home/providers/category_providers.dart';
+
 class SearchBarDesign extends ConsumerStatefulWidget {
   final bool filter;
   const SearchBarDesign({super.key, required this.filter});
@@ -185,11 +187,13 @@ class _SearchBarDesignState extends ConsumerState<SearchBarDesign> {
 
 // 3. Bottom Sheet para filtros avanzados (opcional)
 class FilterBottomSheet extends ConsumerWidget {
+  const FilterBottomSheet({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTag = ref.watch(selectedTagProvider);
-    final tags = ref.watch(eventTagsProvider);
-    final searchQuery = ref.watch(searchQueryProvider);
+    final categories = ref.watch(getAllCategoriesProvider);
+    ref.watch(searchQueryProvider);
 
     return Container(
       decoration: const BoxDecoration(
@@ -222,22 +226,28 @@ class FilterBottomSheet extends ConsumerWidget {
                 AppText.body1("Categorías", color: AppColors.neutral900),
                 const SizedBox(height: 12),
 
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _buildFilterChip(
-                      "Todas",
-                      selectedTag == null,
-                      () => ref.read(selectedTagProvider.notifier).state = null,
-                    ),
-                    ...tags.map((tag) => _buildFilterChip(
-                          tag,
-                          selectedTag == tag,
-                          () => ref.read(selectedTagProvider.notifier).state =
-                              tag,
-                        )),
-                  ],
+                categories.when(
+                  data: (list) => Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _buildFilterChip(
+                        "Todas",
+                        selectedTag == null,
+                        () =>
+                            ref.read(selectedTagProvider.notifier).state = null,
+                      ),
+                      ...list.map((category) => _buildFilterChip(
+                            category.name,
+                            selectedTag == category.name,
+                            () => ref.read(selectedTagProvider.notifier).state =
+                                category.name,
+                          )),
+                    ],
+                  ),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (e, _) => Text('Error: $e'),
                 ),
 
                 const SizedBox(height: 20),

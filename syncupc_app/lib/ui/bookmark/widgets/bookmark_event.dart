@@ -104,7 +104,7 @@ class BookmarkEvent extends ConsumerWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: AppText.body3(
-                          event.eventLocation,
+                          event.campus.name,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
