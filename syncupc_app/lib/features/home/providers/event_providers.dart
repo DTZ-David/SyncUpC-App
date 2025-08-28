@@ -1,5 +1,7 @@
 // services/auth_service.dart
 
+// ignore_for_file: collection_methods_unrelated_type
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:syncupc/features/home/models/event_model.dart';
@@ -65,7 +67,6 @@ Future<List<EventModel>> filteredEventsNearby(Ref ref) async {
 
   var filteredEvents = events;
 
-  // Filtrar por categoría si hay una seleccionada
   if (selectedTag != null) {
     filteredEvents = filteredEvents
         .where((event) => event.categories.contains(selectedTag))

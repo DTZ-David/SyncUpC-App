@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:syncupc/ui/bookmark/screens/bookmark_screen.dart';
 import 'package:syncupc/ui/forum/screens/forum_post_screen.dart';

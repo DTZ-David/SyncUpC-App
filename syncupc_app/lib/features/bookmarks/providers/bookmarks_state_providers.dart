@@ -1,4 +1,6 @@
 // bookmarks_state_providers.dart
+// ignore_for_file: invalid_use_of_visible_for_testing_member, invalid_use_of_protected_member, avoid_print
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:syncupc/features/bookmarks/service/bookmarks_service.dart';

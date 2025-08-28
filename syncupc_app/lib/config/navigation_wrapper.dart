@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -5,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:syncupc/design_system/protons/colors.dart';
 import '../features/auth/providers/auth_providers.dart';
 import '../ui/home/widgets/confirm_scan_dialog.dart';
-import '../ui/registerEvent/screens/register_event_screen.dart';
 import '../utils/bottom_navigation.dart';
 
 class MainNavigationWrapper extends ConsumerWidget {
