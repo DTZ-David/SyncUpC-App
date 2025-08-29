@@ -15,19 +15,95 @@ class SearchScreen extends ConsumerStatefulWidget {
 }
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
-  final Set<String> selectedTags = {};
+  final Set<String> selectedCategoryNames = {};
+  final TextEditingController searchController = TextEditingController();
+  String searchQuery = '';
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  // Función para asignar colores a las categorías específicas
+  Color getCategoryColor(String categoryName) {
+    final specificColors = {
+      'Académico': Colors.blue,
+      'Investigación': Colors.red,
+      'Tecnología e innovación': Colors.orange,
+      'Cultural y artístico': Colors.purple,
+      'Deportivo': Colors.teal,
+      'Bienestar y salud': Colors.pink,
+      'Social y comunitario': Colors.amber,
+      'Otros': Colors.grey,
+    };
+
+    return specificColors[categoryName] ?? Colors.indigo;
+  }
+
+  // Función para asignar iconos a las categorías específicas
+  IconData getCategoryIcon(String categoryName) {
+    final specificIcons = {
+      'Académico': Icons.school,
+      'Investigación': Icons.science,
+      'Tecnología e innovación': Icons.computer,
+      'Cultural y artístico': Icons.theater_comedy,
+      'Deportivo': Icons.sports,
+      'Bienestar y salud': Icons.favorite,
+      'Social y comunitario': Icons.groups,
+      'Otros': Icons.category,
+    };
+
+    return specificIcons[categoryName] ?? Icons.label;
+  }
+
+  // Función para ordenar las categorías de manera lógica
+  List<dynamic> _sortCategories(List<dynamic> categories) {
+    final categoryOrder = [
+      'Académico',
+      'Investigación',
+      'Tecnología e innovación',
+      'Cultural y artístico',
+      'Deportivo',
+      'Bienestar y salud',
+      'Social y comunitario',
+      'Otros',
+    ];
+
+    final sortedCategories = <dynamic>[];
+
+    // Primero agregar las categorías en el orden específico
+    for (String categoryName in categoryOrder) {
+      try {
+        final category = categories.firstWhere(
+          (cat) => cat.name == categoryName,
+        );
+        sortedCategories.add(category);
+      } catch (e) {
+        // La categoría no existe, continuar
+      }
+    }
+
+    // Agregar cualquier categoría que no esté en el orden específico
+    for (var category in categories) {
+      if (!sortedCategories.any((cat) => cat.name == category.name)) {
+        sortedCategories.add(category);
+      }
+    }
+
+    return sortedCategories;
+  }
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(getAllCategoriesProvider);
-
-    final allEvents = ref.watch(getAllEventsProvider);
+    final categoriesAsync = ref.watch(getAllCategoriesProvider);
+    final allEventsAsync = ref.watch(getAllEventsProvider);
 
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Header con gradiente
+            // Header con gradiente y barra de búsqueda
             SliverToBoxAdapter(
               child: Container(
                 decoration: BoxDecoration(
@@ -67,7 +143,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Barra de búsqueda mejorada
+                    // Barra de búsqueda funcional
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -80,7 +156,41 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           ),
                         ],
                       ),
-                      child: const SearchBarDesign(filter: false),
+                      child: TextField(
+                        controller: searchController,
+                        onChanged: (value) {
+                          setState(() {
+                            searchQuery = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Buscar eventos...',
+                          prefixIcon:
+                              const Icon(Icons.search, color: Colors.grey),
+                          suffixIcon: searchQuery.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear,
+                                      color: Colors.grey),
+                                  onPressed: () {
+                                    setState(() {
+                                      searchController.clear();
+                                      searchQuery = '';
+                                    });
+                                  },
+                                )
+                              : null,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -122,91 +232,58 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Consumer(
-                  builder: (context, ref, _) {
-                    final categories = ref.watch(getAllCategoriesProvider);
-
-                    return categories.when(
-                      data: (list) => Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: list
-                            .map(
-                                (category) => _buildCategoryChip(category.name))
-                            .toList(),
-                      ),
-                      loading: () => const Padding(
-                        padding: EdgeInsets.all(40),
-                        child: Center(
-                          child: Column(
-                            children: [
-                              CircularProgressIndicator(),
-                              SizedBox(height: 16),
-                              Text(
-                                "Cargando categorías...",
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      error: (e, _) => Padding(
-                        padding: const EdgeInsets.all(40),
-                        child: Center(
-                          child: Text(
-                            "Error al cargar categorías: $e",
-                            style: TextStyle(
-                              color: Colors.red,
-                              fontSize: 14,
+                child: categoriesAsync.when(
+                  data: (categories) {
+                    final sortedCategories = _sortCategories(categories);
+                    return Container(
+                      height: 200, // Altura fija para mostrar ~4 categorías
+                      child: ListView.builder(
+                        itemCount: sortedCategories.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _buildCategoryChip(
+                              sortedCategories[index].name,
+                              index,
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     );
                   },
-                ),
-              ),
-            ),
-
-            // Mostrar filtros activos si hay alguno
-            if (selectedTags.isNotEmpty)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Filtrando por:",
-                        style: TextStyle(
+                  loading: () => const Padding(
+                    padding: EdgeInsets.all(40),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 16),
+                          Text(
+                            "Cargando categorías...",
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  error: (e, _) => Padding(
+                    padding: const EdgeInsets.all(40),
+                    child: Center(
+                      child: Text(
+                        "Error al cargar categorías: $e",
+                        style: const TextStyle(
+                          color: Colors.red,
                           fontSize: 14,
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const Spacer(),
-                      TextButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            selectedTags.clear();
-                          });
-                        },
-                        icon: const Icon(Icons.clear, size: 16),
-                        label: const Text("Limpiar",
-                            style: TextStyle(fontSize: 12)),
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
+            ),
 
             // Sección de eventos destacados
             SliverToBoxAdapter(
@@ -236,7 +313,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             // Grid de eventos mejorado con filtrado
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              sliver: allEvents.when(
+              sliver: allEventsAsync.when(
                 loading: () => const SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.all(40),
@@ -295,43 +372,23 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   ),
                 ),
                 data: (eventList) {
-                  // Filtrar eventos basado en tags seleccionados
-                  final filteredEvents = selectedTags.isEmpty
-                      ? eventList
-                      : eventList.where((event) {
-                          // Asume que el evento tiene una propiedad 'tags' o similar
-                          // Ajusta esta lógica según tu modelo de datos
-                          return selectedTags.any((selectedTag) =>
-                              event.eventTitle
-                                  .toLowerCase()
-                                  .contains(selectedTag.toLowerCase()) ||
-                              // Si tienes un campo de tags en el evento, úsalo así:
-                              // event.tags.contains(selectedTag)
-                              selectedTag.toLowerCase() == 'académicos' &&
-                                  event.eventTitle
-                                      .toLowerCase()
-                                      .contains('académ') ||
-                              selectedTag.toLowerCase() == 'charla' &&
-                                  event.eventTitle
-                                      .toLowerCase()
-                                      .contains('charla') ||
-                              selectedTag.toLowerCase() == 'motivación' &&
-                                  event.eventTitle
-                                      .toLowerCase()
-                                      .contains('motiva') ||
-                              selectedTag.toLowerCase() == 'liderazgo' &&
-                                  event.eventTitle
-                                      .toLowerCase()
-                                      .contains('lider') ||
-                              selectedTag.toLowerCase() == 'seminario' &&
-                                  event.eventTitle
-                                      .toLowerCase()
-                                      .contains('seminario') ||
-                              selectedTag.toLowerCase() == 'investigación' &&
-                                  event.eventTitle
-                                      .toLowerCase()
-                                      .contains('investiga'));
-                        }).toList();
+                  // Filtrar eventos basado en categorías seleccionadas y búsqueda
+                  final filteredEvents = eventList.where((event) {
+                    bool matchesCategory = selectedCategoryNames.isEmpty ||
+                        event.categories.any((category) =>
+                            selectedCategoryNames.contains(category.name));
+
+                    bool matchesSearch = searchQuery.isEmpty ||
+                        event.eventTitle
+                            .toLowerCase()
+                            .contains(searchQuery.toLowerCase()) ||
+                        (event.eventObjective
+                                ?.toLowerCase()
+                                .contains(searchQuery.toLowerCase()) ??
+                            false);
+
+                    return matchesCategory && matchesSearch;
+                  }).toList();
 
                   if (filteredEvents.isEmpty) {
                     return SliverToBoxAdapter(
@@ -346,21 +403,25 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              selectedTags.isEmpty
+                              (selectedCategoryNames.isEmpty &&
+                                      searchQuery.isEmpty)
                                   ? "No hay eventos disponibles"
-                                  : "No se encontraron eventos\ncon las categorías seleccionadas",
+                                  : "No se encontraron eventos\ncon los filtros aplicados",
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.grey[600],
                               ),
                             ),
-                            if (selectedTags.isNotEmpty) ...[
+                            if (selectedCategoryNames.isNotEmpty ||
+                                searchQuery.isNotEmpty) ...[
                               const SizedBox(height: 16),
                               TextButton.icon(
                                 onPressed: () {
                                   setState(() {
-                                    selectedTags.clear();
+                                    selectedCategoryNames.clear();
+                                    searchController.clear();
+                                    searchQuery = '';
                                   });
                                 },
                                 icon: const Icon(Icons.clear),
@@ -404,74 +465,71 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  Widget _buildCategoryChip(String tag) {
-    final isSelected = selectedTags.contains(tag);
+  Widget _buildCategoryChip(String categoryName, int index) {
+    final isSelected = selectedCategoryNames.contains(categoryName);
+    final icon = getCategoryIcon(categoryName);
+    final color = getCategoryColor(categoryName);
 
-    // Lista de iconos para las categorías
-    final categoryIcons = {
-      'académicos': Icons.school,
-      'charla': Icons.chat,
-      'motivación': Icons.psychology,
-      'seminario': Icons.event,
-      'investigación': Icons.science,
-    };
-
-    final categoryColors = {
-      'académicos': Colors.blue,
-      'charla': Colors.green,
-      'motivación': Colors.orange,
-      'liderazgo': Colors.purple,
-      'seminario': Colors.teal,
-      'investigación': Colors.red,
-    };
-
-    final icon = categoryIcons[tag.toLowerCase()] ?? Icons.label;
-    final color = categoryColors[tag.toLowerCase()] ?? Colors.grey;
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      child: FilterChip(
-        selected: isSelected,
-        label: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isSelected ? Colors.white : color,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              tag,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black87,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-        onSelected: (selected) {
-          setState(() {
-            if (selected) {
-              selectedTags.add(tag);
-            } else {
-              selectedTags.remove(tag);
-            }
-          });
-        },
-        backgroundColor: Colors.white,
-        selectedColor: color,
-        checkmarkColor: Colors.white,
-        elevation: isSelected ? 4 : 2,
-        shadowColor: color.withOpacity(0.3),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(
+    return Container(
+      width: double.infinity,
+      height: 45,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color: isSelected ? color : color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
             color: isSelected ? color : color.withOpacity(0.3),
-            width: isSelected ? 0 : 1,
+            width: 1,
           ),
         ),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () {
+              setState(() {
+                if (selectedCategoryNames.contains(categoryName)) {
+                  selectedCategoryNames.remove(categoryName);
+                } else {
+                  selectedCategoryNames.add(categoryName);
+                }
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: isSelected ? Colors.white.withOpacity(0.2) : color,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Icon(
+                      icon,
+                      size: 14,
+                      color: isSelected ? Colors.white : Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      categoryName,
+                      style: TextStyle(
+                        color:
+                            isSelected ? Colors.white : color.withOpacity(0.8),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -513,7 +571,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             child: Stack(
               children: [
                 // Imagen de fondo si existe
-                if (event.imageUrls.isNotEmpty)
+                if (event.imageUrls != null && event.imageUrls.isNotEmpty)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.network(
@@ -560,7 +618,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   left: 16,
                   right: 16,
                   child: Text(
-                    event.eventTitle,
+                    event.eventTitle ?? 'Sin título',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
