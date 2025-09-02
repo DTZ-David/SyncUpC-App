@@ -5,13 +5,13 @@ class EventBasicInfoForm extends ConsumerWidget {
   final TextEditingController titleController;
   final TextEditingController linkController;
   final TextEditingController descriptionController;
+  final TextEditingController maxCapacityController; // Nuevo controller
   final List<String> selectedCareers;
   final Function(List<String>) onCareersChanged;
   final bool isVirtual;
   final Function(bool) onVirtualChanged;
   final bool requiresRegistration;
   final Function(bool) onRegistrationChanged;
-  // Nuevos parámetros
   final int? maxCapacity;
   final Function(int?) onMaxCapacityChanged;
   final bool isPublic;
@@ -22,6 +22,7 @@ class EventBasicInfoForm extends ConsumerWidget {
     required this.titleController,
     required this.linkController,
     required this.descriptionController,
+    required this.maxCapacityController, // Nuevo parámetro
     required this.selectedCareers,
     required this.onCareersChanged,
     required this.isVirtual,
@@ -83,9 +84,7 @@ class EventBasicInfoForm extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.all(12),
           child: AppTextField(
-            controller: TextEditingController(
-              text: maxCapacity?.toString() ?? '',
-            ),
+            controller: maxCapacityController,
             hintText: "Número máximo de participantes (0 = sin límite)",
             keyboardType: TextInputType.number,
             onChanged: (value) {

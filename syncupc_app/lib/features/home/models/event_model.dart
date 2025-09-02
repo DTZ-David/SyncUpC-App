@@ -99,9 +99,11 @@ class EventModel {
 
   static DateTime _parseFlexibleDate(String raw) {
     try {
-      return DateTime.parse(raw); // ISO 8601
+      // Caso ISO 8601 (ej: "2025-09-01T22:30:00Z")
+      return DateTime.parse(raw).toLocal();
     } catch (_) {
-      return DateFormat("dd/MM/yyyy HH:mm:ss").parse(raw);
+      // Caso personalizado "dd/MM/yyyy HH:mm:ss"
+      return DateFormat("dd/MM/yyyy HH:mm:ss").parseUtc(raw).toLocal();
     }
   }
 }

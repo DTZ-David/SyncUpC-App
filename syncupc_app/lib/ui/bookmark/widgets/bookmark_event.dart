@@ -132,29 +132,29 @@ class BookmarkEvent extends ConsumerWidget {
               ),
             ),
 
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: () async {
-                try {
-                  await ref.read(removeSavedEventsProvider(event.id).future);
-                  PopupUtils.showSuccess(
-                    context,
-                    message: '¡Evento eliminado exitosamente!',
-                    subtitle: 'Tu evento ha sido actualizado',
-                    duration: const Duration(seconds: 2),
-                  );
-                  ref.invalidate(getSavedEventsProvider);
-                } catch (e) {
-                  PopupUtils.showError(
-                    context,
-                    message: e.toString(),
-                    subtitle: 'Por favor intenta de nuevo',
-                    duration: const Duration(seconds: 2),
-                  );
-                }
-              },
-              child: const Icon(Icons.favorite, color: Colors.red),
-            ),
+            // const SizedBox(width: 8),
+            // GestureDetector(
+            //   onTap: () async {
+            //     try {
+            //       await ref.read(removeSavedEventsProvider(event.id).future);
+            //       PopupUtils.showSuccess(
+            //         context,
+            //         message: '¡Evento eliminado exitosamente!',
+            //         subtitle: 'Tu evento ha sido actualizado',
+            //         duration: const Duration(seconds: 2),
+            //       );
+            //       ref.invalidate(getSavedEventsProvider);
+            //     } catch (e) {
+            //       PopupUtils.showError(
+            //         context,
+            //         message: e.toString(),
+            //         subtitle: 'Por favor intenta de nuevo',
+            //         duration: const Duration(seconds: 2),
+            //       );
+            //     }
+            //   },
+            //   child: const Icon(Icons.favorite, color: Colors.red),
+            // ),
           ],
         ),
       ),

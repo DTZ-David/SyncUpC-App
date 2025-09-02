@@ -6,6 +6,7 @@ import 'package:syncupc/design_system/protons/colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:syncupc/features/attendance/providers/attendance_providers.dart';
 import 'package:syncupc/ui/home/widgets/confirmation_message.dart';
+import 'package:syncupc/utils/popup_utils.dart';
 
 class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key});
@@ -16,31 +17,58 @@ class ScannerScreen extends ConsumerStatefulWidget {
 
 class _ScannerScreenState extends ConsumerState<ScannerScreen> {
   bool _hasScanned = false;
+  bool _isProcessing = false;
 
   void _onDetect(BarcodeCapture capture) async {
     final barcode = capture.barcodes.firstOrNull;
-    if (barcode == null || _hasScanned) return;
+    if (barcode == null || _hasScanned || _isProcessing) return;
 
     final String? code = barcode.rawValue;
     if (code == null) return;
 
-    _hasScanned = true;
+    setState(() {
+      _isProcessing = true;
+    });
 
     debugPrint("Código escaneado: $code");
 
-    final eventTitle = await ref.read(checkInProvider(code).future);
-    // Muestra el popup de confirmación
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const AttendanceConfirmationPopup(
-        title: "QR Escaneado",
-      ),
-    );
+    try {
+      final eventTitle = await ref.read(checkInProvider(code).future);
 
-    if (mounted) {
-      context.go("/event_confirm", extra: eventTitle);
+      // Si llegamos aquí, el escaneo fue exitoso
+      _hasScanned = true;
+
+      // Muestra el popup de confirmación
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const AttendanceConfirmationPopup(
+          title: "QR Escaneado",
+        ),
+      );
+
+      if (mounted) {
+        context.go("/event_confirm", extra: eventTitle);
+      }
+    } catch (error) {
+      // Manejar diferentes tipos de errores
+
+      if (mounted) {
+        _showErrorPopup("El evento no ha iniciado o ya finalizo");
+        // Resetear para permitir otro intento
+        setState(() {
+          _isProcessing = false;
+        });
+      }
     }
+  }
+
+  void _showErrorPopup(String message) {
+    PopupUtils.showInfo(
+      context,
+      message: message,
+      subtitle: 'Por favor intenta de nuevo',
+    );
   }
 
   @override
@@ -78,21 +106,43 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 AppText.body2(
-                  "Ubica el QR dentro del\nrecuadro para escanear",
+                  _isProcessing
+                      ? "Procesando QR..."
+                      : "Ubica el QR dentro del\nrecuadro para escanear",
                   textAlign: TextAlign.center,
                   color: AppColors.primary200,
                 ),
                 const SizedBox(height: 40),
-                Container(
-                  width: 220,
-                  height: 220,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: AppColors.primary200,
-                      width: 4,
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      width: 220,
+                      height: 220,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: _isProcessing
+                              ? Colors.orange
+                              : AppColors.primary200,
+                          width: 4,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                    if (_isProcessing)
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const CircularProgressIndicator(
+                          color: AppColors.primary200,
+                          strokeWidth: 3,
+                        ),
+                      ),
+                  ],
                 ),
               ],
             ),

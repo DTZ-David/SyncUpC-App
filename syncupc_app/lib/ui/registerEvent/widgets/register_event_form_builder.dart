@@ -97,8 +97,7 @@ class RegisterEventFormBuilder {
         onStartTimeChanged,
         onEndTimeChanged,
       ),
-      _buildPermissionsSection(permissions),
-      _buildCreateEventButton(onCreateEvent, ref),
+      _buildCreateEventButton(onCreateEvent, ref)
     ];
   }
 
@@ -133,6 +132,8 @@ class RegisterEventFormBuilder {
     );
   }
 
+  final maxCapacityController = TextEditingController();
+
   Widget _buildBasicInfoForm(
     TextEditingController titleController,
     TextEditingController linkController,
@@ -148,10 +149,16 @@ class RegisterEventFormBuilder {
     bool isPublic,
     Function(bool) onIsPublicChanged,
   ) {
+    // Actualizar el texto del controller cuando sea necesario
+    if (maxCapacityController.text != (maxCapacity?.toString() ?? '')) {
+      maxCapacityController.text = maxCapacity?.toString() ?? '';
+    }
+
     return EventBasicInfoForm(
       titleController: titleController,
       linkController: linkController,
       descriptionController: descriptionController,
+      maxCapacityController: maxCapacityController, // Pasar el controller
       selectedCareers: selectedCareers,
       onCareersChanged: onCareersChanged,
       isVirtual: isVirtual,
@@ -216,12 +223,6 @@ class RegisterEventFormBuilder {
       onDateChanged: onDateChanged,
       onStartTimeChanged: onStartTimeChanged,
       onEndTimeChanged: onEndTimeChanged,
-    );
-  }
-
-  Widget _buildPermissionsSection(dynamic permissions) {
-    return EventPermissionsSection(
-      permissions: permissions,
     );
   }
 

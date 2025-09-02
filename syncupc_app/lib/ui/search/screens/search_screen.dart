@@ -628,24 +628,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-
-                // Icono de favorito
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Icon(
-                      Icons.favorite_border,
-                      color: Colors.red[400],
-                      size: 16,
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
