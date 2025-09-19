@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:syncupc/design_system/molecules/search_bar.dart';
 import 'package:syncupc/features/home/providers/event_providers.dart';
 
 import '../../../design_system/protons/colors.dart';
@@ -235,7 +234,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 child: categoriesAsync.when(
                   data: (categories) {
                     final sortedCategories = _sortCategories(categories);
-                    return Container(
+                    return SizedBox(
                       height: 200, // Altura fija para mostrar ~4 categorías
                       child: ListView.builder(
                         itemCount: sortedCategories.length,
@@ -383,9 +382,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                             .toLowerCase()
                             .contains(searchQuery.toLowerCase()) ||
                         (event.eventObjective
-                                ?.toLowerCase()
-                                .contains(searchQuery.toLowerCase()) ??
-                            false);
+                            .toLowerCase()
+                            .contains(searchQuery.toLowerCase()));
 
                     return matchesCategory && matchesSearch;
                   }).toList();
@@ -470,7 +468,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final icon = getCategoryIcon(categoryName);
     final color = getCategoryColor(categoryName);
 
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 45,
       child: AnimatedContainer(

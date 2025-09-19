@@ -5,8 +5,10 @@ import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/molecules/attendees_avatars.dart';
 import 'package:syncupc/ui/home/widgets/confirmation_message.dart';
 import 'package:syncupc/utils/popup_utils.dart';
+import '../../../features/attendance/providers/register_event_state.dart';
 import '../../../features/bookmarks/providers/bookmarks_state_providers.dart'; // Tu nuevo provider
 import '../../../features/home/models/event_model.dart';
+import '../../../features/home/providers/event_providers.dart';
 import '../widgets/expandable_title.dart';
 
 class EventDetailsScreen extends ConsumerWidget {
@@ -16,13 +18,58 @@ class EventDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final registerState = ref.watch(registerEventStateProvider);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (event.isUserRegistered && !registerState.isRegistered) {
+        ref
+            .read(registerEventStateProvider.notifier)
+            .setInitialRegistrationStatus(true);
+      }
+    });
+
+    // Escuchar cambios para mostrar mensajes
+    ref.listen(registerEventStateProvider, (previous, next) {
+      if (next.isSuccess && (previous?.isSuccess != true)) {
+        if (next.isRegistered) {
+          PopupUtils.showSuccess(
+            context,
+            message: '¡Registraste tu asistencia al evento!',
+            duration: const Duration(seconds: 2),
+          );
+        } else {
+          PopupUtils.showSuccess(
+            context,
+            message: '¡Cancelaste tu registro al evento!',
+            duration: const Duration(seconds: 2),
+          );
+        }
+      }
+
+      if (next.error != null && (previous?.error != next.error)) {
+        String errorMessage = "Error al procesar registro";
+
+        if (next.error!.contains("401")) {
+          errorMessage = "Sesión expirada. Inicia sesión nuevamente";
+        } else if (next.error!.contains("403")) {
+          errorMessage = "No tienes permisos para esta acción";
+        } else if (next.error!.contains("Ya estás registrado")) {
+          errorMessage = "Ya estás registrado en este evento";
+        }
+
+        PopupUtils.showError(
+          context,
+          message: errorMessage,
+          duration: const Duration(seconds: 3),
+        );
+      }
+    });
     // Inicializar el estado de bookmarks con el evento actual si está guardado
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (event.isSaved) {
         ref.read(bookmarksStateProvider.notifier).addBookmark(event.id);
       }
     });
-
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.primary200,
@@ -179,8 +226,14 @@ class EventDetailsScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    child:
+                        _buildRegistrationButton(context, ref, registerState),
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -230,6 +283,60 @@ class EventDetailsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _handleRegister(BuildContext context, WidgetRef ref) async {
+    try {
+      await ref
+          .read(registerEventStateProvider.notifier)
+          .registerToEvent(event.id);
+    } catch (e) {
+      // El error ya se maneja en el ref.listen
+    }
+  }
+
+  void _handleUnregister(BuildContext context, WidgetRef ref) async {
+    try {
+      await ref
+          .read(registerEventStateProvider.notifier)
+          .unregisterFromEvent(event.id);
+      ref.invalidate(getAllEventsForUProvider);
+      ref.invalidate(getAllEventsProvider);
+    } catch (e) {
+      // El error ya se maneja en el ref.listen
+    }
+  }
+
+  Widget _buildRegistrationButton(
+    BuildContext context,
+    WidgetRef ref,
+    RegisterEventStateData registerState,
+  ) {
+    // Si el evento NO requiere registro, no mostrar botón
+    if (!event.requiresRegistration) {
+      return const SizedBox.shrink();
+    }
+
+    // Si está registrado, mostrar botón para cancelar
+    if (registerState.isRegistered || event.isUserRegistered) {
+      return PrimaryButton(
+        text: "Cancelar registro",
+        variant: ButtonVariant.outlined,
+        isLoading: registerState.isLoading,
+        isDisabled: registerState.isLoading,
+        onPressed: () => _handleUnregister(context, ref),
+      );
+    }
+    // Si NO está registrado, mostrar botón para registrarse
+    else {
+      return PrimaryButton(
+        text: "Registrate",
+        variant: ButtonVariant.filled,
+        isLoading: registerState.isLoading,
+        isDisabled: registerState.isLoading,
+        onPressed: () => _handleRegister(context, ref),
+      );
+    }
   }
 
   void _handleBookmarkTap(BuildContext context, WidgetRef ref) async {

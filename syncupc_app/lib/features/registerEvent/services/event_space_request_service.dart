@@ -6,7 +6,7 @@ import 'package:syncupc/features/registerEvent/models/event_space_request.dart';
 
 class EventSpaceRequestService {
   Future<List<EventSpaceRequest>> getAllSpaces(String token) async {
-    final url = Uri.parse('${AppConfig.baseUrl}/event/getallspaces');
+    final url = Uri.parse('${AppConfig.baseUrl}/eventutils/getallspaces');
 
     try {
       final response = await http.get(

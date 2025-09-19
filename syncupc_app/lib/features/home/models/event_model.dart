@@ -22,8 +22,10 @@ class EventModel {
   final List<CategoryModel> categories;
   final List<EventTypeModel> eventTypes;
 
+  final bool requiresRegistration; // 🆕 CAMPO QUE FALTABA
   final bool isSaved;
   final String status;
+  final bool isUserRegistered; // 🆕 NUEVO CAMPO
 
   EventModel({
     required this.id,
@@ -42,8 +44,11 @@ class EventModel {
     required this.participantProfilePictures,
     required this.categories,
     required this.eventTypes,
+    required this.requiresRegistration,
+    required this.isUserRegistered, // 🆕 CAMPO QUE FALTABA
     required this.isSaved,
     required this.status,
+    // 🆕 NUEVO CAMPO
   });
 
   factory EventModel.fromJson(Map<String, dynamic> json) {
@@ -69,8 +74,12 @@ class EventModel {
       eventTypes: (json['eventTypes'] as List? ?? [])
           .map((e) => EventTypeModel.fromJson(e))
           .toList(),
+      requiresRegistration:
+          json['requiresRegistration'] ?? false, // 🆕 CAMPO QUE FALTABA
       isSaved: json['isSaved'] ?? false,
+      isUserRegistered: json['isRegistered'] ?? false,
       status: json['status'] ?? 'Created',
+      // 🆕 NUEVO CAMPO (nota: 'isRegistered' del backend)
     );
   }
 
@@ -92,9 +101,59 @@ class EventModel {
       'participantProfilePictures': participantProfilePictures,
       'categories': categories.map((e) => e.toJson()).toList(),
       'eventTypes': eventTypes.map((e) => e.toJson()).toList(),
+      'requiresRegistration': requiresRegistration, // 🆕 CAMPO QUE FALTABA
       'isSaved': isSaved,
+      'isUserRegistered': isUserRegistered, // 🆕 NUEVO CAMPO
       'status': status,
     };
+  }
+
+  // 🚀 MÉTODO HELPER PARA CREAR COPIAS (útil para el provider)
+  EventModel copyWith({
+    String? id,
+    String? eventTitle,
+    String? eventObjective,
+    DateTime? eventStartDate,
+    DateTime? eventEndDate,
+    CampusModel? campus,
+    SpaceModel? space,
+    bool? targetTeachers,
+    bool? targetStudents,
+    bool? targetAdministrative,
+    bool? targetGeneral,
+    String? additionalDetails,
+    List<String>? imageUrls,
+    List<String>? participantProfilePictures,
+    List<CategoryModel>? categories,
+    List<EventTypeModel>? eventTypes,
+    bool? requiresRegistration,
+    bool? isSaved,
+    String? status,
+    bool? isUserRegistered,
+  }) {
+    return EventModel(
+      id: id ?? this.id,
+      eventTitle: eventTitle ?? this.eventTitle,
+      eventObjective: eventObjective ?? this.eventObjective,
+      eventStartDate: eventStartDate ?? this.eventStartDate,
+      eventEndDate: eventEndDate ?? this.eventEndDate,
+      campus: campus ?? this.campus,
+      space: space ?? this.space,
+      targetTeachers: targetTeachers ?? this.targetTeachers,
+      targetStudents: targetStudents ?? this.targetStudents,
+      targetAdministrative: targetAdministrative ?? this.targetAdministrative,
+      targetGeneral: targetGeneral ?? this.targetGeneral,
+      additionalDetails: additionalDetails ?? this.additionalDetails,
+      imageUrls: imageUrls ?? this.imageUrls,
+      participantProfilePictures:
+          participantProfilePictures ?? this.participantProfilePictures,
+      categories: categories ?? this.categories,
+      eventTypes: eventTypes ?? this.eventTypes,
+      requiresRegistration: requiresRegistration ?? this.requiresRegistration,
+      isSaved: isSaved ?? this.isSaved,
+      isUserRegistered: isUserRegistered ?? this.isUserRegistered,
+      status: status ?? this.status,
+    );
   }
 
   static DateTime _parseFlexibleDate(String raw) {
@@ -108,6 +167,7 @@ class EventModel {
   }
 }
 
+// Los demás modelos se quedan igual...
 /// Campus
 class CampusModel {
   final String name;

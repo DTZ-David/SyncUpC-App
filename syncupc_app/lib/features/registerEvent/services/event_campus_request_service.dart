@@ -5,7 +5,7 @@ import 'dart:convert';
 
 class EventCampusRequestService {
   Future<List<EventCampusRequest>> getAllCampuses(String token) async {
-    final url = Uri.parse('${AppConfig.baseUrl}/event/getallcampus');
+    final url = Uri.parse('${AppConfig.baseUrl}/eventutils/getallcampus');
 
     try {
       final response = await http.get(

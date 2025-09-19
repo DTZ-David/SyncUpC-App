@@ -6,7 +6,7 @@ import 'package:syncupc/features/registerEvent/models/event_type_request.dart';
 
 class EventTypeRequestService {
   Future<List<EventTypeRequest>> getAllEventTypes(String token) async {
-    final url = Uri.parse('${AppConfig.baseUrl}/event/getalleventtypes');
+    final url = Uri.parse('${AppConfig.baseUrl}/eventutils/getalleventtypes');
 
     try {
       final response = await http.get(

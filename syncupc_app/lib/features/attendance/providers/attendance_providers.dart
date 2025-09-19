@@ -11,3 +11,15 @@ Future<String> checkIn(Ref ref, String eventId) async {
   final token = ref.read(authTokenProvider);
   return await AttendanceService().checkIn(token!, eventId);
 }
+
+@riverpod
+Future<Map<String, dynamic>> registerEvent(Ref ref, String eventId) async {
+  final token = ref.read(authTokenProvider);
+  return await AttendanceService().registerEvent(token!, eventId);
+}
+
+@riverpod
+Future<Map<String, dynamic>> unregisterEvent(Ref ref, String eventId) async {
+  final token = ref.read(authTokenProvider);
+  return await AttendanceService().unregisterEvent(token!, eventId);
+}

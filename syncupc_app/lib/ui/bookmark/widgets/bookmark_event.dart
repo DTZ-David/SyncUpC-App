@@ -4,10 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
-import 'package:syncupc/features/bookmarks/providers/bookmarks_providers.dart';
 import 'package:syncupc/features/home/models/event_model.dart';
-
-import '../../../utils/popup_utils.dart';
 
 class BookmarkEvent extends ConsumerWidget {
   final EventModel event;

@@ -5,7 +5,8 @@ import 'dart:convert';
 
 class EventCategoryService {
   Future<List<EventCategoryRequest>> getAllCategories(String token) async {
-    final url = Uri.parse('${AppConfig.baseUrl}/event/getalleventcategories');
+    final url =
+        Uri.parse('${AppConfig.baseUrl}/eventutils/getalleventcategories');
 
     try {
       final response = await http.get(
