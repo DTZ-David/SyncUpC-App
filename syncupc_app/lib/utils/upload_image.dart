@@ -16,10 +16,25 @@ class SupabaseStorageService {
     required String bucket,
     required String path,
   }) async {
-    final fileBytes = await file.readAsBytes();
-    final contentType = lookupMimeType(file.path) ?? 'image/jpeg';
-
     try {
+      print('📤 Iniciando upload a Supabase...');
+      print('📤 Bucket: $bucket');
+      print('📤 Path: $path');
+      print('📤 File path: ${file.path}');
+
+      // Verificar que el archivo existe
+      if (!await file.exists()) {
+        print('❌ Error: El archivo no existe');
+        return null;
+      }
+
+      final fileBytes = await file.readAsBytes();
+      print('📤 Bytes leídos: ${fileBytes.length}');
+
+      final contentType = lookupMimeType(file.path) ?? 'image/jpeg';
+      print('📤 Content type: $contentType');
+
+      print('📤 Iniciando upload...');
       await _client.storage.from(bucket).uploadBinary(
             path,
             fileBytes,
@@ -29,10 +44,23 @@ class SupabaseStorageService {
             ),
           );
 
+      print('✅ Upload completado, obteniendo URL pública...');
+
       // Retorna la URL pública
-      return _client.storage.from(bucket).getPublicUrl(path);
+      final publicUrl = _client.storage.from(bucket).getPublicUrl(path);
+      print('✅ URL pública generada: $publicUrl');
+
+      return publicUrl;
     } catch (e) {
-      print('Error subiendo imagen: $e');
+      print('❌ Error completo en upload: $e');
+      print('❌ Tipo de error: ${e.runtimeType}');
+
+      // Si es un error específico de Supabase, mostrar más detalles
+      if (e is StorageException) {
+        print('❌ StorageException - Message: ${e.message}');
+        print('❌ StorageException - Status Code: ${e.statusCode}');
+      }
+
       return null;
     }
   }
@@ -43,10 +71,12 @@ class SupabaseStorageService {
     required String path,
   }) async {
     try {
+      print('🗑️ Eliminando imagen: $bucket/$path');
       await _client.storage.from(bucket).remove([path]);
+      print('✅ Imagen eliminada exitosamente');
       return true;
     } catch (e) {
-      print('Error eliminando imagen: $e');
+      print('❌ Error eliminando imagen: $e');
       return false;
     }
   }

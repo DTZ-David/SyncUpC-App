@@ -159,4 +159,34 @@ class LoginController extends _$LoginController {
   void clearError() {
     state = state.copyWith(errorMessage: null);
   }
+
+  void updateUserData(User updatedUser) {
+    // Actualizar el estado con los nuevos datos del usuario
+    state = state.copyWith(
+      user: updatedUser,
+    );
+
+    // También actualizar SharedPreferences para persistir los cambios
+    _updateStoredUserData(updatedUser);
+  }
+
+  Future<void> _updateStoredUserData(User user) async {
+    try {
+      // Usar UserStorageService para guardar los datos actualizados
+      final storageService = UserStorageService();
+      await storageService.saveUser(user);
+
+      // También actualizar SharedPreferences individuales (manteniendo consistencia)
+      final prefs = await SharedPreferences.getInstance();
+      await Future.wait([
+        prefs.setString('token', user.token),
+        prefs.setString('refreshToken', user.refreshToken),
+        prefs.setString('name', user.name),
+        prefs.setString('profilePicture', user.photo),
+        prefs.setString('role', user.role),
+      ]);
+    } catch (e) {
+      print('Error actualizando datos almacenados: $e');
+    }
+  }
 }

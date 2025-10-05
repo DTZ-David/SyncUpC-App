@@ -74,10 +74,14 @@ class RegisterProfileNotificationsPreferencesScreen extends ConsumerWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: PrimaryButton(
-                  text: "Siguiente",
+                  text: "Registrar",
                   variant: ButtonVariant.filled,
                   onPressed: () async {
-                    context.showLoadingDialog(type: LoadingType.simple);
+                    context.showLoadingDialog(
+                      type: LoadingType.custom,
+                      title: "Creando tu cuenta...",
+                      subtitle: "Solo un momento, estamos registrando tu información.",
+                    );
 
                     final formData = ref.read(registerFormProvider);
                     final success = await ref

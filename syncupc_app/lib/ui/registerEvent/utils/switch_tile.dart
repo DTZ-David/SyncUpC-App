@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:syncupc/design_system/atoms/app_text.dart';
 import 'package:syncupc/design_system/protons/colors.dart';
 import 'package:syncupc/ui/home/exports/home.dart';

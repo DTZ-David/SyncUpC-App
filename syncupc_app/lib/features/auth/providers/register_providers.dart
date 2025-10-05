@@ -17,7 +17,6 @@ class RegisterForm extends _$RegisterForm {
         phoneNumber: '',
         profilePhotoUrl: '',
         careerId: '',
-        facultyId: '',
       );
 
   // setters de paso en paso ↓
@@ -33,8 +32,6 @@ class RegisterForm extends _$RegisterForm {
       state = state.copyWith(phoneNumber: v.trim());
 
   void setCareer(String id) => state = state.copyWith(careerId: id);
-
-  void setFaculty(String id) => state = state.copyWith(facultyId: id);
 
   void setNotificationPrefs(NotificationPreferences prefs) =>
       state = state.copyWith(notificationPreferences: prefs);

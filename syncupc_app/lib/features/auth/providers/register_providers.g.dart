@@ -58,7 +58,7 @@ final registerErrorMessageProvider = AutoDisposeProvider<String?>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef RegisterErrorMessageRef = AutoDisposeProviderRef<String?>;
-String _$registerFormHash() => r'e647c16f3bc8611c164dad44cebb7fc7f9f8d41c';
+String _$registerFormHash() => r'23343632825706a355eb3957d15f5242f1accb79';
 
 /// See also [RegisterForm].
 @ProviderFor(RegisterForm)

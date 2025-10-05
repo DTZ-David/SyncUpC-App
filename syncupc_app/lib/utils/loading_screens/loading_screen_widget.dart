@@ -40,7 +40,6 @@ class LoadingScreen extends ConsumerWidget {
           indicatorColor: indicatorColor,
         );
       case LoadingType.simple:
-      default:
         return SimpleLoadingScreen(
           backgroundColor: backgroundColor,
           indicatorColor: indicatorColor,

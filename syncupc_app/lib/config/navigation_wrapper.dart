@@ -9,7 +9,7 @@ import '../features/auth/providers/auth_providers.dart';
 import '../ui/home/widgets/confirm_scan_dialog.dart';
 import '../utils/bottom_navigation.dart';
 
-class MainNavigationWrapper extends ConsumerWidget {
+class MainNavigationWrapper extends ConsumerStatefulWidget {
   final Widget child;
 
   const MainNavigationWrapper({
@@ -18,8 +18,34 @@ class MainNavigationWrapper extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MainNavigationWrapper> createState() => _MainNavigationWrapperState();
+}
+
+class _MainNavigationWrapperState extends ConsumerState<MainNavigationWrapper> {
+  bool _isNavigatingToRegister = false;
+  bool _isNavigatingToScanner = false;
+
+  // 🔥 Rutas donde NO deben aparecer los FABs
+  bool _shouldHideFABs(String currentRoute) {
+    final hiddenRoutes = [
+      '/register_event',
+      '/scanner',
+      '/event/details',
+      '/event/forum',
+      '/event/forum/createTopic',
+      '/event/forum/forumPostDetails',
+      '/event_confirm',
+      '/edit_profile',
+    ];
+
+    return hiddenRoutes.any((route) => currentRoute.startsWith(route));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
+    final currentRoute = GoRouterState.of(context).uri.path;
+    final shouldHideFABs = _shouldHideFABs(currentRoute);
 
     if (user == null) {
       return const Scaffold(
@@ -34,8 +60,8 @@ class MainNavigationWrapper extends ConsumerWidget {
         Scaffold(
           resizeToAvoidBottomInset: false,
           extendBody: true,
-          body: child,
-          floatingActionButton: isAuthorized
+          body: widget.child,
+          floatingActionButton: (isAuthorized && !shouldHideFABs && !_isNavigatingToRegister)
               ? Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -49,15 +75,15 @@ class MainNavigationWrapper extends ConsumerWidget {
                   ),
                   child: FloatingActionButton(
                     backgroundColor: AppColors.white,
-                    onPressed: () async {
-                      print('🔥 FloatingActionButton presionado');
-                      try {
-                        print('🔥 Intentando navegar con GoRouter');
-                        await context.push('/register_event');
-                        print('🔥 Navegación completada');
-                      } catch (e) {
-                        print('🔥 Error con GoRouter: $e');
-                      }
+                    onPressed: () {
+                      if (_isNavigatingToRegister) return;
+                      print('🔥 FAB Register Event - Navegando a /register_event');
+                      setState(() => _isNavigatingToRegister = true);
+                      context.pushNamed('registerEvent').then((_) {
+                        if (mounted) {
+                          setState(() => _isNavigatingToRegister = false);
+                        }
+                      });
                     },
                     shape: const CircleBorder(),
                     elevation: 0,
@@ -74,36 +100,43 @@ class MainNavigationWrapper extends ConsumerWidget {
           bottomNavigationBar: BottomNavigation(isAuthorized: isAuthorized),
         ),
 
-        // FAB escáner flotando arriba a la derecha en toda la app
-        Positioned(
-          bottom: 80,
-          right: 16,
-          child: FloatingActionButton(
-            heroTag: 'scanner',
-            backgroundColor: Colors.white,
-            shape: const CircleBorder(),
-            elevation: 4,
-            onPressed: () {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => ConfirmScanDialog(
-                  onCancel: () => Navigator.of(context).pop(),
-                  onContinue: () {
-                    Navigator.of(context).pop();
-                    // Mantener push para scanner ya que está fuera del ShellRoute
-                    context.push('/scanner');
-                  },
-                ),
-              );
-            },
-            child: SvgPicture.asset(
-              'assets/images/scanner.svg',
-              width: 28,
-              height: 28,
+        // 🔥 FAB escáner - Solo mostrar si no debe estar oculto
+        if (!shouldHideFABs && !_isNavigatingToScanner)
+          Positioned(
+            bottom: 120,
+            right: 16,
+            child: FloatingActionButton(
+              heroTag: 'scanner',
+              backgroundColor: Colors.white,
+              shape: const CircleBorder(),
+              elevation: 4,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => ConfirmScanDialog(
+                    onCancel: () => Navigator.of(context).pop(),
+                    onContinue: () {
+                      if (_isNavigatingToScanner) return;
+                      Navigator.of(context).pop();
+                      print('🔥 FAB Scanner - Navegando a /scanner');
+                      setState(() => _isNavigatingToScanner = true);
+                      context.pushNamed('scanner').then((_) {
+                        if (mounted) {
+                          setState(() => _isNavigatingToScanner = false);
+                        }
+                      });
+                    },
+                  ),
+                );
+              },
+              child: SvgPicture.asset(
+                'assets/images/scanner.svg',
+                width: 28,
+                height: 28,
+              ),
             ),
           ),
-        ),
       ],
     );
   }

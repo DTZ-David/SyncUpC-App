@@ -52,7 +52,6 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
       }
     } catch (error) {
       // Manejar diferentes tipos de errores
-
       if (mounted) {
         _showErrorPopup("El evento no ha iniciado o ya finalizo");
         // Resetear para permitir otro intento
@@ -71,6 +70,23 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
     );
   }
 
+  // 🔥 Función para manejar el retroceso de forma segura
+  void _handleBack() {
+    try {
+      // 🔥 Verificar si puede hacer pop
+      if (context.canPop()) {
+        context.pop();
+      } else {
+        // 🔥 Si no puede hacer pop, navegar al home
+        context.go('/');
+      }
+    } catch (e) {
+      // 🔥 Como fallback, siempre navegar al home
+      debugPrint('Error en navegación: $e');
+      context.go('/');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,7 +103,7 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
               child: Align(
                 alignment: Alignment.topLeft,
                 child: GestureDetector(
-                  onTap: () => context.pop(),
+                  onTap: _handleBack, // 🔥 Usar la función segura
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(

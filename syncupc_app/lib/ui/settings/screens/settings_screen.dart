@@ -44,30 +44,30 @@ class SettingsScreen extends ConsumerWidget {
               title: 'Cambiar Contraseña',
               onTap: () {},
             ),
-            SettingsOption(
-              icon: "assets/images/historial.svg",
-              title: 'Historial de participación y certificados',
-              onTap: () {
-                context.push('/history');
-              },
-            ),
-            _buildSectionTitle("Notificaciones"),
-            SettingsOption(
-              icon: "assets/images/notifications.svg",
-              title: 'Activar/Desactivar notificaciones',
-              onTap: () {},
-            ),
-            SettingsOption(
-              icon: "assets/images/clock_settings.svg",
-              title: 'Horario Preferido',
-              onTap: () {},
-            ),
-            _buildSectionTitle("Tema de la App"),
-            SettingsOption(
-              icon: "assets/images/edit.svg",
-              title: 'Tema',
-              onTap: () {},
-            ),
+            // SettingsOption(
+            //   icon: "assets/images/historial.svg",
+            //   title: 'Historial de participación y certificados',
+            //   onTap: () {
+            //     context.push('/history');
+            //   },
+            // ),
+            // _buildSectionTitle("Notificaciones"),
+            // SettingsOption(
+            //   icon: "assets/images/notifications.svg",
+            //   title: 'Activar/Desactivar notificaciones',
+            //   onTap: () {},
+            // ),
+            // SettingsOption(
+            //   icon: "assets/images/clock_settings.svg",
+            //   title: 'Horario Preferido',
+            //   onTap: () {},
+            // ),
+            // _buildSectionTitle("Tema de la App"),
+            // SettingsOption(
+            //   icon: "assets/images/edit.svg",
+            //   title: 'Tema',
+            //   onTap: () {},
+            // ),
             _buildSectionTitle("Salir"),
             SettingsOption(
               icon: "assets/images/logout.svg",

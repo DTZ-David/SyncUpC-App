@@ -19,6 +19,11 @@ class AttendanceService {
         body: json.encode({
           "eventId": eventId,
         }),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('La solicitud tardó demasiado. Verifica tu conexión');
+        },
       );
 
       print("🔍 Status Code: ${response.statusCode}");
@@ -79,6 +84,11 @@ class AttendanceService {
         body: json.encode({
           "eventId": eventId,
         }),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('La solicitud tardó demasiado. Verifica tu conexión');
+        },
       );
 
       print("🔍 Status Code: ${response.statusCode}");
@@ -142,6 +152,11 @@ class AttendanceService {
         body: json.encode({
           "eventId": eventId,
         }),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('La solicitud tardó demasiado. Verifica tu conexión');
+        },
       );
 
       print("🔍 Status Code: ${response.statusCode}");

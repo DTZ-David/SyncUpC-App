@@ -5,13 +5,26 @@ import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/atoms/text_field.dart';
 import 'package:syncupc/features/auth/controllers/login_controller.dart';
-import 'package:syncupc/utils/popup_utils.dart'; // Asegúrate de importar esto
+import 'package:syncupc/utils/popup_utils.dart';
 
 class LoginScreen extends ConsumerWidget {
   LoginScreen({super.key});
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  // 🔥 Función para validar email
+  bool _isValidEmail(String email) {
+    final RegExp emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
+
+  // 🔥 Función específica para validar email de unicesar (opcional)
+  bool _isValidUnicesar(String email) {
+    return email.toLowerCase().endsWith('@unicesar.edu.co');
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,13 +51,10 @@ class LoginScreen extends ConsumerWidget {
         });
       }
 
-      // 🔥 Cambiar la navegación directa por una más robusta
       if (current.isAuthenticated &&
           current.isAuthenticated != previous?.isAuthenticated &&
           !current.isLoading) {
         print('🚀 LoginScreen - Usuario autenticado, navegando al home...');
-
-        // 🔥 Navegación directa - mounted no existe en ConsumerWidget
         context.go('/');
       }
     });
@@ -53,6 +63,7 @@ class LoginScreen extends ConsumerWidget {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
 
+      // 🔥 Validación de campos vacíos
       if (email.isEmpty || password.isEmpty) {
         PopupUtils.showWarning(
           context,
@@ -62,6 +73,26 @@ class LoginScreen extends ConsumerWidget {
         return;
       }
 
+      // 🔥 Validación de formato de email
+      if (!_isValidEmail(email)) {
+        PopupUtils.showWarning(
+          context,
+          message: 'Email inválido',
+          subtitle: 'Por favor ingresa un email con formato válido',
+        );
+        return;
+      }
+
+      if (!_isValidUnicesar(email)) {
+        PopupUtils.showWarning(
+          context,
+          message: 'Email no válido',
+          subtitle: 'Debe ser un email de @unicesar.edu.co',
+        );
+        return;
+      }
+
+      // 🚀 Si todas las validaciones pasan, proceder con el login
       ref.read(loginControllerProvider.notifier).login(email, password);
     }
 
@@ -92,6 +123,8 @@ class LoginScreen extends ConsumerWidget {
                     "Escribe aqui tu email              | @unicesar.edu.co",
                 controller: _emailController,
                 enabled: !authState.isLoading,
+                // 🔥 Configuración adicional para email
+                keyboardType: TextInputType.emailAddress,
               ),
             ),
             Padding(

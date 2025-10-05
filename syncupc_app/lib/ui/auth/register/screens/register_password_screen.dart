@@ -21,7 +21,8 @@ class _RegisterPasswordScreenState
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
 
-  final _passwordRegex = RegExp(r'^(?=.*\d).{8,}$');
+  // Requiere: mínimo 6 caracteres
+  final _passwordRegex = RegExp(r'^.{6,}$');
 
   void _showError(BuildContext context, String msg) {
     PopupUtils.showError(
@@ -41,8 +42,7 @@ class _RegisterPasswordScreenState
     }
 
     if (!_passwordRegex.hasMatch(pass)) {
-      _showError(context,
-          'La contraseña debe tener mínimo 8 caracteres y al menos un número.');
+      _showError(context, 'La contraseña debe tener mínimo 6 caracteres');
       return;
     }
 
@@ -82,7 +82,7 @@ class _RegisterPasswordScreenState
             const Padding(
               padding: EdgeInsets.all(12),
               child: AppText(
-                "Usa una combinación de letras, números y símbolos para mayor seguridad.",
+                "Debe contener mínimo 6 caracteres.",
               ),
             ),
             const SizedBox(height: 40),

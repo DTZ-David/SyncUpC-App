@@ -15,6 +15,11 @@ class LoginService {
           'email': username,
           'password': password,
         }),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('La solicitud tardó demasiado. Verifica tu conexión');
+        },
       );
 
       if (response.statusCode == 200) {
@@ -38,12 +43,17 @@ class LoginService {
   }
 
   Future<Map<String, dynamic>> refreshAccessToken(String refreshToken) async {
-    final url = Uri.parse('${AppConfig.baseUrl}/user//refresh-token');
+    final url = Uri.parse('${AppConfig.baseUrl}/user/refresh-token');
 
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'refreshToken': refreshToken}),
+    ).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        throw Exception('La solicitud tardó demasiado. Verifica tu conexión');
+      },
     );
 
     if (response.statusCode == 200) {

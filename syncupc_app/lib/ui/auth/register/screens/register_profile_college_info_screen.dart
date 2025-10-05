@@ -2,6 +2,7 @@ import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/atoms/text_field.dart';
 import 'package:syncupc/features/auth/providers/register_providers.dart';
+import 'package:syncupc/utils/popup_utils.dart';
 
 import '../../../../design_system/molecules/drop_down.dart';
 import '../../../../design_system/models/dropdown_item.dart';
@@ -135,7 +136,27 @@ class _RegisterProfileCollegeInfoScreenState
                       text: "Siguiente",
                       variant: ButtonVariant.filled,
                       onPressed: () {
-                        // Ya no necesitamos setear aquí porque se actualiza en tiempo real
+                        final phone = phoneController.text.trim();
+                        final careerId = formState.careerId;
+
+                        if (phone.isEmpty) {
+                          PopupUtils.showWarning(
+                            context,
+                            message: 'Campo vacío',
+                            subtitle: 'Por favor ingresa tu número de teléfono',
+                          );
+                          return;
+                        }
+
+                        if (careerId.isEmpty) {
+                          PopupUtils.showWarning(
+                            context,
+                            message: 'Carrera no seleccionada',
+                            subtitle: 'Por favor selecciona tu carrera',
+                          );
+                          return;
+                        }
+
                         context.push('/register/step/3');
                       },
                     ),

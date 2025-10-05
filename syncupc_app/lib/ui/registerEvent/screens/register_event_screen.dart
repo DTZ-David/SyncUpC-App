@@ -184,7 +184,9 @@ class _RegisterEventScreenState extends ConsumerState<RegisterEventScreen> {
       selectedSpaceId: _selectedSpaceId,
       selectedEventTypes: _selectedEventTypes,
       selectedEventCategories: _selectedEventCategories,
-    )) return;
+    )) {
+      return;
+    }
 
     await _service.createEvent(
       context: context,

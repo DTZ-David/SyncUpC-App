@@ -12,6 +12,11 @@ class RegisterService {
         url,
         headers: {'Content-Type': 'application/json'},
         body: json.encode(request.toJson()),
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('La solicitud tardó demasiado. Verifica tu conexión');
+        },
       );
 
       if (response.statusCode == 201 || response.statusCode == 200) {

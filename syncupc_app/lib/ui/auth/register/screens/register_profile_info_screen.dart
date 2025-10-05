@@ -2,9 +2,45 @@ import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/atoms/text_field.dart';
 import 'package:syncupc/features/auth/providers/register_providers.dart';
+import 'package:syncupc/utils/popup_utils.dart';
 
-class RegisterProfileInfoScreen extends ConsumerWidget {
+class RegisterProfileInfoScreen extends ConsumerStatefulWidget {
   const RegisterProfileInfoScreen({super.key});
+
+  @override
+  ConsumerState<RegisterProfileInfoScreen> createState() =>
+      _RegisterProfileInfoScreenState();
+}
+
+class _RegisterProfileInfoScreenState
+    extends ConsumerState<RegisterProfileInfoScreen> {
+  late final TextEditingController nameController;
+  late final TextEditingController lastNameController;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController();
+    lastNameController = TextEditingController();
+
+    // Cargar valores guardados si existen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final formState = ref.read(registerFormProvider);
+      if (formState.firstName.isNotEmpty) {
+        nameController.text = formState.firstName;
+      }
+      if (formState.lastName.isNotEmpty) {
+        lastNameController.text = formState.lastName;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    lastNameController.dispose();
+    super.dispose();
+  }
 
   int getCurrentStep(BuildContext context) {
     final uri = GoRouterState.of(context).uri.toString();
@@ -14,9 +50,7 @@ class RegisterProfileInfoScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final nameController = TextEditingController();
-    final lastNameController = TextEditingController();
+  Widget build(BuildContext context) {
     final currentStep = getCurrentStep(context);
 
     return Scaffold(
@@ -81,12 +115,29 @@ class RegisterProfileInfoScreen extends ConsumerWidget {
                       text: "Siguiente",
                       variant: ButtonVariant.filled,
                       onPressed: () {
-                        ref
-                            .read(registerFormProvider.notifier)
-                            .setFirstName(nameController.text.trim());
-                        ref
-                            .read(registerFormProvider.notifier)
-                            .setLastName(lastNameController.text.trim());
+                        final name = nameController.text.trim();
+                        final lastName = lastNameController.text.trim();
+
+                        if (name.isEmpty) {
+                          PopupUtils.showWarning(
+                            context,
+                            message: 'Campo vacío',
+                            subtitle: 'Por favor ingresa tu nombre',
+                          );
+                          return;
+                        }
+
+                        if (lastName.isEmpty) {
+                          PopupUtils.showWarning(
+                            context,
+                            message: 'Campo vacío',
+                            subtitle: 'Por favor ingresa tu apellido',
+                          );
+                          return;
+                        }
+
+                        ref.read(registerFormProvider.notifier).setFirstName(name);
+                        ref.read(registerFormProvider.notifier).setLastName(lastName);
 
                         context.push('/register/step/2');
                       },
