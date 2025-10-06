@@ -47,6 +47,22 @@ class _MainNavigationWrapperState extends ConsumerState<MainNavigationWrapper> {
     final currentRoute = GoRouterState.of(context).uri.path;
     final shouldHideFABs = _shouldHideFABs(currentRoute);
 
+    // Resetear flags de navegación si ya no estamos en esas rutas
+    if (!currentRoute.startsWith('/register_event') && _isNavigatingToRegister) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() => _isNavigatingToRegister = false);
+        }
+      });
+    }
+    if (!currentRoute.startsWith('/scanner') && _isNavigatingToScanner) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() => _isNavigatingToScanner = false);
+        }
+      });
+    }
+
     if (user == null) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),

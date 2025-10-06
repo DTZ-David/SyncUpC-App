@@ -79,6 +79,12 @@ class RegisterEventValidator {
       return false;
     }
 
+    // Validación de que la hora de fin no sea anterior a la de inicio
+    if (!_isEndTimeValid(startTime, endTime)) {
+      _showError(context, 'La hora de fin debe ser posterior a la hora de inicio');
+      return false;
+    }
+
     // Validación de fecha futura
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -103,6 +109,29 @@ class RegisterEventValidator {
     }
 
     return true;
+  }
+
+  bool _isEndTimeValid(String startTime, String endTime) {
+    // Convertir las horas a un formato comparable
+    final startHour = _convertTo24Hour(startTime);
+    final endHour = _convertTo24Hour(endTime);
+
+    return endHour > startHour;
+  }
+
+  int _convertTo24Hour(String time) {
+    // Formato: "8:00 AM" o "1:00 PM"
+    final parts = time.split(' ');
+    final timeParts = parts[0].split(':');
+    final hour = int.parse(timeParts[0]);
+    final isPM = parts[1] == 'PM';
+
+    if (isPM && hour != 12) {
+      return hour + 12;
+    } else if (!isPM && hour == 12) {
+      return 0;
+    }
+    return hour;
   }
 
   void _showError(BuildContext context, String message) {

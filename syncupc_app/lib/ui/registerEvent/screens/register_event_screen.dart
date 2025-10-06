@@ -67,70 +67,79 @@ class _RegisterEventScreenState extends ConsumerState<RegisterEventScreen> {
   @override
   Widget build(BuildContext context) {
     final permissions = ref.watch(permissionProvider);
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom > 0
+        ? MediaQuery.of(context).viewInsets.bottom
+        : MediaQuery.of(context).padding.bottom + 80;
 
     _setupStateListener();
 
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: _formBuilder.buildFormSections(
-              context: context,
-              titleController: _titleController,
-              linkController: _linkController,
-              descriptionController: _descriptionController,
-              selectedImage: _selectedImage,
-              selectedCareers: _selectedCareers,
-              selectedDate: _selectedDate,
-              startTime: _startTime,
-              endTime: _endTime,
-              isVirtual: _isVirtual,
-              requiresRegistration: _requiresRegistration,
-              allowProfessors: _allowProfessors,
-              allowStudents: _allowStudents,
-              allowGraduates: _allowGraduates,
-              allowGeneralPublic: _allowGeneralPublic,
-              // Nuevos parámetros
-              selectedCampusId: _selectedCampusId,
-              selectedSpaceId: _selectedSpaceId,
-              selectedEventTypes: _selectedEventTypes,
-              selectedEventCategories: _selectedEventCategories,
-              maxCapacity: _maxCapacity,
-              isPublic: _isPublic,
-              permissions: permissions,
-              onImageSelected: (image) =>
-                  setState(() => _selectedImage = image),
-              onCareersChanged: (careers) =>
-                  setState(() => _selectedCareers = careers),
-              onDateChanged: (date) => setState(() => _selectedDate = date),
-              onStartTimeChanged: (time) => setState(() => _startTime = time),
-              onEndTimeChanged: (time) => setState(() => _endTime = time),
-              onVirtualChanged: (value) => setState(() => _isVirtual = value),
-              onRegistrationChanged: (value) =>
-                  setState(() => _requiresRegistration = value),
-              onProfessorsChanged: (value) =>
-                  setState(() => _allowProfessors = value),
-              onStudentsChanged: (value) =>
-                  setState(() => _allowStudents = value),
-              onGraduatesChanged: (value) =>
-                  setState(() => _allowGraduates = value),
-              onGeneralPublicChanged: (value) =>
-                  setState(() => _allowGeneralPublic = value),
-              // Nuevos callbacks
-              onCampusChanged: (campusId) =>
-                  setState(() => _selectedCampusId = campusId),
-              onSpaceChanged: (spaceId) =>
-                  setState(() => _selectedSpaceId = spaceId),
-              onEventTypesChanged: (types) =>
-                  setState(() => _selectedEventTypes = types),
-              onEventCategoriesChanged: (categories) =>
-                  setState(() => _selectedEventCategories = categories),
-              onMaxCapacityChanged: (capacity) =>
-                  setState(() => _maxCapacity = capacity),
-              onIsPublicChanged: (isPublic) =>
-                  setState(() => _isPublic = isPublic),
-              onCreateEvent: _createEvent,
-              ref: ref,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        body: SafeArea(
+          bottom: false,
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: EdgeInsets.only(bottom: bottomPadding),
+            child: Column(
+              children: _formBuilder.buildFormSections(
+                context: context,
+                titleController: _titleController,
+                linkController: _linkController,
+                descriptionController: _descriptionController,
+                selectedImage: _selectedImage,
+                selectedCareers: _selectedCareers,
+                selectedDate: _selectedDate,
+                startTime: _startTime,
+                endTime: _endTime,
+                isVirtual: _isVirtual,
+                requiresRegistration: _requiresRegistration,
+                allowProfessors: _allowProfessors,
+                allowStudents: _allowStudents,
+                allowGraduates: _allowGraduates,
+                allowGeneralPublic: _allowGeneralPublic,
+                // Nuevos parámetros
+                selectedCampusId: _selectedCampusId,
+                selectedSpaceId: _selectedSpaceId,
+                selectedEventTypes: _selectedEventTypes,
+                selectedEventCategories: _selectedEventCategories,
+                maxCapacity: _maxCapacity,
+                isPublic: _isPublic,
+                permissions: permissions,
+                onImageSelected: (image) =>
+                    setState(() => _selectedImage = image),
+                onCareersChanged: (careers) =>
+                    setState(() => _selectedCareers = careers),
+                onDateChanged: (date) => setState(() => _selectedDate = date),
+                onStartTimeChanged: (time) => setState(() => _startTime = time),
+                onEndTimeChanged: (time) => setState(() => _endTime = time),
+                onVirtualChanged: (value) => setState(() => _isVirtual = value),
+                onRegistrationChanged: (value) =>
+                    setState(() => _requiresRegistration = value),
+                onProfessorsChanged: (value) =>
+                    setState(() => _allowProfessors = value),
+                onStudentsChanged: (value) =>
+                    setState(() => _allowStudents = value),
+                onGraduatesChanged: (value) =>
+                    setState(() => _allowGraduates = value),
+                onGeneralPublicChanged: (value) =>
+                    setState(() => _allowGeneralPublic = value),
+                // Nuevos callbacks
+                onCampusChanged: (campusId) =>
+                    setState(() => _selectedCampusId = campusId),
+                onSpaceChanged: (spaceId) =>
+                    setState(() => _selectedSpaceId = spaceId),
+                onEventTypesChanged: (types) =>
+                    setState(() => _selectedEventTypes = types),
+                onEventCategoriesChanged: (categories) =>
+                    setState(() => _selectedEventCategories = categories),
+                onMaxCapacityChanged: (capacity) =>
+                    setState(() => _maxCapacity = capacity),
+                onIsPublicChanged: (isPublic) =>
+                    setState(() => _isPublic = isPublic),
+                onCreateEvent: _createEvent,
+                ref: ref,
+              ),
             ),
           ),
         ),
@@ -216,20 +225,22 @@ class _RegisterEventScreenState extends ConsumerState<RegisterEventScreen> {
   }
 
   void _showSuccessAndNavigate() {
-    PopupUtils.showSuccess(
-      context,
-      message: '¡Evento creado exitosamente!',
-      subtitle: 'Tu evento ha sido registrado correctamente',
-      duration: const Duration(seconds: 2),
-    );
-
     ref.read(registerEventControllerProvider.notifier).resetSuccess();
     ref.invalidate(getAllEventsForUProvider);
     ref.invalidate(getAllEventsProvider);
 
-    Future.delayed(const Duration(milliseconds: 500), () {
+    // Primero navegamos al home
+    context.go('/');
+
+    // Luego mostramos el success popup en el home
+    Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
-        context.go('/');
+        PopupUtils.showSuccess(
+          context,
+          message: '¡Evento creado exitosamente!',
+          subtitle: 'Tu evento ha sido registrado correctamente',
+          duration: const Duration(seconds: 2),
+        );
       }
     });
   }

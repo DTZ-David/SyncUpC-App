@@ -15,8 +15,7 @@ class TimeDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 120,
+    return Expanded(
       child: DropdownButtonFormField<String>(
         value: value,
         decoration: InputDecoration(
@@ -25,11 +24,13 @@ class TimeDropdown extends StatelessWidget {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         ),
         icon: const Icon(Icons.keyboard_arrow_down),
+        isExpanded: true,
+        menuMaxHeight: 300,
         onChanged: onChanged,
         items: items.map((time) {
           return DropdownMenuItem(
             value: time,
-            child: AppText.body3(time), // Aquí se usa AppText
+            child: AppText.body3(time),
           );
         }).toList(),
       ),

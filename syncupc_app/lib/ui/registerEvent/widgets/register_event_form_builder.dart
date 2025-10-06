@@ -228,7 +228,7 @@ class RegisterEventFormBuilder {
 
   Widget _buildCreateEventButton(VoidCallback onCreateEvent, WidgetRef ref) {
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
       child: Consumer(
         builder: (context, ref, child) {
           final registerState = ref.watch(registerEventControllerProvider);
