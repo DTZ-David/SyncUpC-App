@@ -7,7 +7,7 @@ import 'package:syncupc/ui/forum/screens/forum_screen.dart';
 import 'package:syncupc/ui/home/screens/event_details_screen.dart';
 import 'package:syncupc/ui/home/screens/event_confirm_screen.dart';
 import 'package:syncupc/ui/home/screens/scanner_screen.dart';
-import 'package:syncupc/ui/registerEvent/screens/register_event_screen.dart';
+import 'package:syncupc/ui/registerEvent/screens/register_event_screen_stepper.dart';
 import 'package:syncupc/ui/search/screens/search_screen.dart';
 import 'package:syncupc/ui/settings/screens/edit_profile_screen.dart';
 import 'package:syncupc/ui/settings/screens/history_screen.dart';
@@ -112,8 +112,8 @@ GoRouter appRouter(Ref ref) {
         path: '/register_event',
         name: 'registerEvent',
         builder: (context, state) {
-          print('🔥🔥🔥 CONSTRUYENDO RegisterEventScreen');
-          return const RegisterEventScreen();
+          print('🔥🔥🔥 CONSTRUYENDO RegisterEventScreenStepper');
+          return const RegisterEventScreenStepper();
         },
       ),
       GoRoute(

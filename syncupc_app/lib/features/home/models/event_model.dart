@@ -162,6 +162,7 @@ class EventModel {
       return DateTime.parse(raw).toLocal();
     } catch (_) {
       // Caso personalizado "dd/MM/yyyy HH:mm:ss"
+      // El backend envía la fecha en hora local, no en UTC
       return DateFormat("dd/MM/yyyy HH:mm:ss").parseUtc(raw).toLocal();
     }
   }

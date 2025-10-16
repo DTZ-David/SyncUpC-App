@@ -34,6 +34,8 @@ class RegisterEventService {
     final startDateTime = _combineDateAndTime(selectedDate, startTime);
     final endDateTime = _combineDateAndTime(selectedDate, endTime);
 
+    final startDateTimeUtc = startDateTime.toUtc();
+    final endDateTimeUtc = endDateTime.toUtc();
     if (endDateTime.isBefore(startDateTime) ||
         endDateTime.isAtSameMomentAs(startDateTime)) {
       _showError(
@@ -70,8 +72,8 @@ class RegisterEventService {
       descriptionController,
       linkController,
       selectedCareers,
-      startDateTime,
-      endDateTime,
+      startDateTimeUtc, //
+      endDateTimeUtc, //
       isVirtual,
       requiresRegistration,
       allowProfessors,

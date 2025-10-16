@@ -14,4 +14,5 @@ export '../widgets/event_basic_info_form.dart';
 export '../widgets/event_date_time_picker.dart';
 export '../widgets/event_image_picker.dart';
 export '../widgets/event_permissions_section.dart';
+export '../widgets/multi_career_selection.dart';
 export '../widgets/register_event_exports.dart';
