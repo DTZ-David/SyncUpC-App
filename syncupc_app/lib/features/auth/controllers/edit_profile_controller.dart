@@ -88,6 +88,7 @@ class EditProfileController extends _$EditProfileController {
           token: user.token,
           refreshToken: user.refreshToken,
           role: user.role,
+          id: '',
         );
 
         // Actualizar el estado del LoginController

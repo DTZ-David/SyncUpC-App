@@ -3,9 +3,11 @@ import 'package:intl/intl.dart';
 import 'package:syncupc/config/exports/design_system_barrel.dart';
 import 'package:syncupc/config/exports/routing.dart';
 import 'package:syncupc/design_system/molecules/attendees_avatars.dart';
+import 'package:syncupc/ui/home/widgets/attendance_qr_dialog.dart';
 import 'package:syncupc/ui/home/widgets/confirmation_message.dart';
 import 'package:syncupc/utils/popup_utils.dart';
 import '../../../features/attendance/providers/register_event_state.dart';
+import '../../../features/auth/providers/auth_providers.dart';
 import '../../../features/bookmarks/providers/bookmarks_state_providers.dart'; // Tu nuevo provider
 import '../../../features/home/models/event_model.dart';
 import '../../../features/home/providers/event_providers.dart';
@@ -30,13 +32,37 @@ class EventDetailsScreen extends ConsumerWidget {
 
     // Escuchar cambios para mostrar mensajes
     ref.listen(registerEventStateProvider, (previous, next) {
+      print(
+          "🔍 Listener activado - previous: ${previous?.isSuccess}, next: ${next.isSuccess}");
+      print("🔍 isRegistered: ${next.isRegistered}");
+
       if (next.isSuccess && (previous?.isSuccess != true)) {
         if (next.isRegistered) {
-          PopupUtils.showSuccess(
-            context,
-            message: '¡Registraste tu asistencia al evento!',
-            duration: const Duration(seconds: 2),
-          );
+          // Obtener el userId actual
+          final userId = ref.read(userIdProvider);
+          print("🔍 UserId obtenido: $userId");
+
+          if (userId != null && userId.isNotEmpty) {
+            // Mostrar el diálogo con el QR
+            print("🔍 Mostrando diálogo QR");
+            showDialog(
+              context: context,
+              barrierDismissible: true,
+              builder: (context) => AttendanceQrDialog(
+                eventId: event.id,
+                eventTitle: event.eventTitle,
+                userId: userId,
+              ),
+            );
+          } else {
+            // Fallback si no hay userId
+            print("🔍 No hay userId, mostrando popup");
+            PopupUtils.showSuccess(
+              context,
+              message: '¡Registraste tu asistencia al evento!',
+              duration: const Duration(seconds: 2),
+            );
+          }
         } else {
           PopupUtils.showSuccess(
             context,

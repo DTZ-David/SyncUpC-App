@@ -40,6 +40,7 @@ class LoginController extends _$LoginController {
       // Guardar datos individuales (manteniendo tu lógica actual)
       final prefs = await SharedPreferences.getInstance();
       await Future.wait([
+        prefs.setString('id', user.id),
         prefs.setString('token', user.token),
         prefs.setString('refreshToken', user.refreshToken),
         prefs.setString('name', user.name),
@@ -87,6 +88,7 @@ class LoginController extends _$LoginController {
         name: user.name,
         photo: user.photo,
         role: user.role,
+        id: user.id,
       );
 
       // 🔥 Guardar el usuario actualizado usando AMBOS métodos para consistencia
@@ -94,6 +96,7 @@ class LoginController extends _$LoginController {
 
       final prefs = await SharedPreferences.getInstance();
       await Future.wait([
+        prefs.setString('id', user.id),
         prefs.setString('token', newToken),
         prefs.setString('refreshToken', newRefreshToken),
         prefs.setString('name', user.name),

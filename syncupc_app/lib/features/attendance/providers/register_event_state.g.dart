@@ -7,7 +7,7 @@ part of 'register_event_state.dart';
 // **************************************************************************
 
 String _$registerEventStateHash() =>
-    r'614cf99e94eb62030e56ee6312f82ee74daad28f';
+    r'0ad70bc71ce25ee454dcb0a0d4f42c044b1b75c8';
 
 /// See also [RegisterEventState].
 @ProviderFor(RegisterEventState)

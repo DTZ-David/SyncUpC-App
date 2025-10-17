@@ -10,7 +10,8 @@ class AttendanceService {
       print("🔍 Enviando request a: $url");
       print("🔍 EventId: $eventId");
 
-      final response = await http.post(
+      final response = await http
+          .post(
         url,
         headers: {
           'Authorization': 'Bearer $token',
@@ -19,7 +20,8 @@ class AttendanceService {
         body: json.encode({
           "eventId": eventId,
         }),
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 30),
         onTimeout: () {
           throw Exception('La solicitud tardó demasiado. Verifica tu conexión');
@@ -66,6 +68,76 @@ class AttendanceService {
     }
   }
 
+  /// Confirma la asistencia de un usuario específico escaneando su QR
+  /// Usado por administradores para confirmar asistencia
+  Future<String> checkInWithUserId(
+      String token, String eventId, String userId) async {
+    final url = Uri.parse('${AppConfig.baseUrl}/attendance/checkinadmin');
+
+    try {
+      print("🔍 Enviando request de checkin con userId a: $url");
+      print("🔍 EventId: $eventId, UserId: $userId");
+
+      final response = await http
+          .post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          "eventId": eventId,
+          "userId": userId,
+        }),
+      )
+          .timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('La solicitud tardó demasiado. Verifica tu conexión');
+        },
+      );
+
+      print("🔍 Status Code: ${response.statusCode}");
+      print("🔍 Response Body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        return responseData['data']['nombre'] ?? 'Usuario';
+      } else if (response.statusCode == 400) {
+        try {
+          final errorData = json.decode(response.body);
+          final message =
+              errorData['Message'] ?? errorData['message'] ?? 'Datos inválidos';
+          throw Exception(message);
+        } catch (e) {
+          if (e.toString().startsWith('Exception:')) {
+            rethrow;
+          }
+          throw Exception('Error de validación: Verifica los datos ingresados');
+        }
+      } else if (response.statusCode == 401) {
+        throw Exception('Sesión expirada');
+      } else if (response.statusCode == 403) {
+        throw Exception('No tienes permisos para confirmar asistencia');
+      } else if (response.statusCode == 404) {
+        throw Exception('Usuario o evento no encontrado');
+      } else if (response.statusCode == 500) {
+        throw Exception('Error del servidor: Intenta más tarde');
+      } else {
+        throw Exception(
+            'Error al confirmar asistencia (${response.statusCode})');
+      }
+    } on http.ClientException {
+      throw Exception('Sin conexión a internet');
+    } catch (e) {
+      print("🔍 Error en checkInWithUserId: $e");
+      if (e.toString().startsWith('Exception:')) {
+        rethrow;
+      }
+      throw Exception('Error inesperado: ${e.toString()}');
+    }
+  }
+
   /// Registra al usuario para un evento específico
   Future<Map<String, dynamic>> registerEvent(
       String token, String eventId) async {
@@ -75,7 +147,8 @@ class AttendanceService {
       print("🔍 Enviando request de registro a: $url");
       print("🔍 EventId: $eventId");
 
-      final response = await http.post(
+      final response = await http
+          .post(
         url,
         headers: {
           'Authorization': 'Bearer $token',
@@ -84,7 +157,8 @@ class AttendanceService {
         body: json.encode({
           "eventId": eventId,
         }),
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 30),
         onTimeout: () {
           throw Exception('La solicitud tardó demasiado. Verifica tu conexión');
@@ -143,7 +217,8 @@ class AttendanceService {
       print("🔍 Enviando request de unregister a: $url");
       print("🔍 EventId: $eventId");
 
-      final response = await http.post(
+      final response = await http
+          .post(
         url,
         headers: {
           'Authorization': 'Bearer $token',
@@ -152,7 +227,8 @@ class AttendanceService {
         body: json.encode({
           "eventId": eventId,
         }),
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 30),
         onTimeout: () {
           throw Exception('La solicitud tardó demasiado. Verifica tu conexión');

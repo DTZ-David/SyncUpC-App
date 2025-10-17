@@ -7,6 +7,8 @@ import 'package:syncupc/ui/forum/screens/forum_screen.dart';
 import 'package:syncupc/ui/home/screens/event_details_screen.dart';
 import 'package:syncupc/ui/home/screens/event_confirm_screen.dart';
 import 'package:syncupc/ui/home/screens/scanner_screen.dart';
+import 'package:syncupc/ui/home/screens/qr_scanner_attendance_screen.dart';
+import 'package:syncupc/ui/home/screens/qr_scanner_with_event_selection.dart';
 import 'package:syncupc/ui/registerEvent/screens/register_event_screen_stepper.dart';
 import 'package:syncupc/ui/search/screens/search_screen.dart';
 import 'package:syncupc/ui/settings/screens/edit_profile_screen.dart';
@@ -160,6 +162,22 @@ GoRouter appRouter(Ref ref) {
         path: '/scanner',
         name: 'scanner',
         builder: (context, state) => const ScannerScreen(),
+      ),
+      GoRoute(
+        path: '/scanner/attendance',
+        name: 'scanner-attendance',
+        builder: (context, state) {
+          final extras = state.extra as Map<String, String>;
+          return QrScannerAttendanceScreen(
+            eventId: extras['eventId']!,
+            eventTitle: extras['eventTitle']!,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/scanner/qr',
+        name: 'scanner-qr',
+        builder: (context, state) => const QrScannerWithEventSelection(),
       ),
 
       // ShellRoute para el layout principal con bottom navigation

@@ -32,3 +32,10 @@ String? userRole(Ref ref) {
   final authState = ref.watch(loginControllerProvider);
   return authState.user?.role;
 }
+
+// Provider para obtener el ID del usuario
+@riverpod
+String? userId(Ref ref) {
+  final authState = ref.watch(loginControllerProvider);
+  return authState.user?.id;
+}

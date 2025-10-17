@@ -3,6 +3,7 @@ import 'package:syncupc/config/exports/routing_for_provider.dart';
 import 'package:syncupc/ui/settings/widgets/settings_option.dart';
 
 import '../../../features/auth/controllers/login_controller.dart';
+import '../../../features/auth/providers/auth_providers.dart';
 import '../../../utils/popup_utils.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -10,6 +11,9 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final userRole = ref.watch(userRoleProvider);
+    final isAdmin = userRole != null && userRole.toLowerCase() == 'staffmember';
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -44,6 +48,15 @@ class SettingsScreen extends ConsumerWidget {
               title: 'Cambiar Contraseña',
               onTap: () {},
             ),
+            // Opción de escáner QR solo para administradores
+            if (isAdmin)
+              SettingsOption(
+                icon: "assets/images/foro.svg",
+                title: 'Escanear QR de Asistencia',
+                onTap: () {
+                  context.push('/scanner/qr');
+                },
+              ),
             // SettingsOption(
             //   icon: "assets/images/historial.svg",
             //   title: 'Historial de participación y certificados',

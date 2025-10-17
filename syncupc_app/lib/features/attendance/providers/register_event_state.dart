@@ -13,11 +13,14 @@ class RegisterEventState extends _$RegisterEventState {
   }
 
   Future<void> registerToEvent(String eventId) async {
-    state = state.copyWith(isLoading: true, error: null);
+    // Resetear isSuccess antes de empezar
+    state = state.copyWith(isLoading: true, error: null, isSuccess: false);
 
     try {
       final token = ref.read(authTokenProvider);
+      print("🔍 RegisterEventState: Llamando a registerEvent con token");
       final result = await AttendanceService().registerEvent(token!, eventId);
+      print("🔍 RegisterEventState: Registro exitoso, resultado: $result");
 
       state = state.copyWith(
         isLoading: false,
@@ -25,9 +28,12 @@ class RegisterEventState extends _$RegisterEventState {
         isRegistered: true, // ✅ Ahora está registrado
         result: result,
       );
+      print("🔍 RegisterEventState: Estado actualizado - isSuccess: ${state.isSuccess}, isRegistered: ${state.isRegistered}");
     } catch (e) {
+      print("🔍 RegisterEventState: Error en registro: $e");
       state = state.copyWith(
         isLoading: false,
+        isSuccess: false,
         error: e.toString(),
       );
       rethrow;
@@ -96,7 +102,7 @@ class RegisterEventStateData {
       isLoading: isLoading ?? this.isLoading,
       isSuccess: isSuccess ?? this.isSuccess,
       isRegistered: isRegistered ?? this.isRegistered,
-      error: error ?? this.error,
+      error: error,  // No usar ?? para permitir resetear el error a null
       result: result ?? this.result,
     );
   }

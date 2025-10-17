@@ -1,4 +1,5 @@
 class User {
+  final String id;
   final String name;
   final String photo;
   final String token;
@@ -6,6 +7,7 @@ class User {
   final String role;
 
   User({
+    required this.id,
     required this.refreshToken,
     required this.name,
     required this.photo,
@@ -17,6 +19,7 @@ class User {
     final data = json['data'] ?? json; // 👈 esto es CLAVE
 
     return User(
+      id: data['id'] ?? data['userId'] ?? '',
       token: data['token'] ?? '',
       refreshToken: data['refreshToken'] ?? '',
       name: data['name'] ?? '',
@@ -27,6 +30,7 @@ class User {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'photo': photo,
       'token': token,
